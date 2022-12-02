@@ -7,3 +7,5 @@ launch.json
 deploy-commands.js
 dist/
 api-example.json
+secrets
+.idea

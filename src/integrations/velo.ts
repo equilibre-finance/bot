@@ -16,4 +16,6 @@ export const GetVeloData = async () => {
     pairs.push(pair.address)
     return pairs
   }, [] as string[])
+  console.log('global.BRIBE_ADDRESSES', global.BRIBE_ADDRESSES);
+  console.log('global.PAIR_ADDRESSES', global.PAIR_ADDRESSES);
 }

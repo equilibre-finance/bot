@@ -12,7 +12,7 @@ export async function GetPrices(): Promise<void> {
     })
 
     await CoinGeckoClient.simple.price({ ids: cgIDs, vs_currencies: 'usd' }).then((resp) => {
-      console.log(resp)
+      // console.log(resp)
       cgIDs.map((token_id) => {
         try {
           const tokenPrice = resp.data[token_id].usd

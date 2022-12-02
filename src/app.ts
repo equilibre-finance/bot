@@ -14,7 +14,7 @@ async function Initialize(): Promise<void> {
 }
 
 async function Notifier(isDown = true) {
-  await PostTelegram(`🚴 Velo Bot ${isDown ? 'Down' : 'Up'}\n`, new Telegraf(LOG_TOKEN), LOG_CHANNEL)
+  await PostTelegram(`Bot ${isDown ? 'Down' : 'Up'}\n`, new Telegraf(LOG_TOKEN), LOG_CHANNEL)
 }
 
 function RegisterShutdownEvents(): void {

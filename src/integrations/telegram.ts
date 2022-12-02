@@ -15,7 +15,7 @@ export async function PostTelegram(
         parse_mode: 'HTML',
         disable_web_page_preview: true,
       })
-      //console.log(response)
+      console.log(response);
     } catch (e: any) {
       console.log(e)
     }

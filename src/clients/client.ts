@@ -10,8 +10,7 @@ export default class RpcClient {
   constructor(provider: JsonRpcProvider) {
     this.chainId = provider.network.chainId
     this.provider = provider
-
-    this.rpcUrl = ethers.providers.AlchemyProvider.getUrl(provider.network, ALCHEMY_ID).url
+    this.rpcUrl = provider.connection.url
 
     console.log('Client', {
       chainId: this.chainId,
