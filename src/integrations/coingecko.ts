@@ -15,9 +15,13 @@ export async function GetPrices(): Promise<void> {
       // console.log(resp)
       cgIDs.map((token_id) => {
         try {
-          const tokenPrice = resp.data[token_id].usd
-          console.log(`${token_id} Token Price: ${tokenPrice}`)
-          global.TOKEN_PRICES[token_id] = tokenPrice
+          if( ! resp.data[token_id] ){
+            global.TOKEN_PRICES[token_id] = '0'
+          }else {
+            const tokenPrice = resp.data[token_id].usd
+            console.log(`${token_id} Token Price: ${tokenPrice}`)
+            global.TOKEN_PRICES[token_id] = tokenPrice
+          }
         } catch (e) {
           console.log(e)
         }

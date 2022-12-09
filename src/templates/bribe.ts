@@ -12,8 +12,8 @@ export function BribeTwitter(dto: BribeDto) {
 
   post.push(`From ${dto.fromEns ? dto.fromEns : dto.notableFrom ? dto.from : '🧑 ' + dto.fromAddress}\n`)
   post.push(`🔗 ${EtherScanTransactionLink(dto.transactionHash)}\n\n`)
-  post.push(`Trade and earn on Velodrome today 👇\n`)
-  post.push(`https://app.velodrome.finance`)
+  post.push(`Trade and earn on Èquilibre today 👇\n`)
+  post.push(`https://equilibrefinance.com`)
   return post.join('')
 }
 
@@ -24,7 +24,7 @@ export function BribeDiscord(dto: BribeDto): EmbedBuilder[] {
     .setURL(`${EtherScanTransactionLink(dto.transactionHash)}`)
     .setFooter({
       iconURL: staticIcons.velodromeIconSmall,
-      text: `Velodrome`,
+      text: `Èquilibre`,
     })
     .setTimestamp()
     .setThumbnail('attachment://buffer.png')
