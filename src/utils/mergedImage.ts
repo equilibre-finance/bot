@@ -2,17 +2,24 @@ import mergeImages from 'merge-images'
 import { Canvas, Image } from 'canvas'
 import { staticIcons } from '../constants/staticIcons'
 
-const coingeckoBaseUrl = 'https://assets.coingecko.com/coins/images/'
+const coingeckoBaseUrl = 'https://raw.githubusercontent.com/equilibre-finance/bot/main/images/'
 
 export const getMergedThumbnail = async (arg0: (string | number)[], arg1: (string | number)[]) => {
   let token0Img = `${coingeckoBaseUrl}${arg0[3] as string}`
   let token1Img = `${coingeckoBaseUrl}${arg1[3] as string}`
 
-  if (arg0[0] === 'velodrome-finance') {
+  if (arg0[0] === 'eq-token') {
+    token0Img = staticIcons.velodromeIcon
+  }
+  if (arg0[0] === 'equilibre-finance') {
     token0Img = staticIcons.velodromeIcon
   }
 
-  if (arg1[0] === 'velodrome-finance') {
+  if (arg1[0] === 'eq-token') {
+    token1Img = staticIcons.velodromeIcon
+  }
+
+  if (arg1[0] === 'equilibre-finance') {
     token1Img = staticIcons.velodromeIcon
   }
 
