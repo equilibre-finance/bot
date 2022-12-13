@@ -6,7 +6,7 @@ export function EtherScanTransactionLink(transactionHash: string) {
 }
 
 export function EtherScanUrl() {
-  return 'https://optimistic.etherscan.io'
+  return 'https://explorer.kava.io'
 }
 
 export function FN(value: number, decimals: number) {

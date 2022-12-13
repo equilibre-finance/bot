@@ -17,8 +17,9 @@ export function SwapTwitter(dto: SwapDto) {
   }
   post.push(`${dto.fromEns ? dto.fromEns : dto.notableFrom ? dto.from : '🧑 ' + dto.fromAddress}\n`)
   post.push(`🔗 ${EtherScanTransactionLink(dto.transactionHash)}\n\n`)
-  post.push(`Trade and earn on Velodrome today 👇\n`)
-  post.push(`https://app.velodrome.finance`)
+  post.push(`Trade and earn on Équilibre today 👇\n`)
+  post.push(`https://equilibrefinance.com`)
+  console.log('twitter', post.join(''));
   return post.join('')
 }
 
@@ -38,10 +39,10 @@ export function SwapDiscord(dto: SwapDto): EmbedBuilder[] {
   const messageEmbeds: EmbedBuilder[] = []
   const embed = new EmbedBuilder()
     .setColor('#00ff7f')
-    .setURL(`${`https://optimistic.etherscan.io/tx/${dto.transactionHash}`}`)
+    .setURL(`${`https://explorer.kava.io/tx/${dto.transactionHash}`}`)
     .setFooter({
       iconURL: staticIcons.velodromeIconSmall,
-      text: `Velodrome`,
+      text: `Équilibre`,
     })
     .setTimestamp()
     .setThumbnail('attachment://buffer.png')
@@ -55,6 +56,7 @@ export function SwapDiscord(dto: SwapDto): EmbedBuilder[] {
     discord2(dto.amount0Out, dto.token0Symbol, dto.amount0OutValue, embed)
   }
   messageEmbeds.push(embed)
+  console.log('discord', embed.toJSON());
   return messageEmbeds
 }
 

@@ -32,13 +32,13 @@ export const TELEGRAM_ACCESS_TOKEN = _.defaultTo(process.env.TELEGRAM_ACCESS_TOK
 export const TELEGRAM_CHANNEL = _.defaultTo(process.env.TELEGRAM_CHANNEL, '')
 
 // THRESHOLDS
-export const DISCORD_SWAP_THRESHOLD = _.defaultTo(process.env.DISCORD_SWAP_THRESHOLD, 25000)
-export const DISCORD_DEPOSIT_THRESHOLD = _.defaultTo(process.env.DISCORD_DEPOSIT_THRESHOLD, 25000)
-export const DISCORD_BRIBE_THRESHOLD = _.defaultTo(process.env.DISCORD_BRIBE_THRESHOLD, 250)
+export const DISCORD_SWAP_THRESHOLD = _.defaultTo(process.env.DISCORD_SWAP_THRESHOLD, 1) // 25000
+export const DISCORD_DEPOSIT_THRESHOLD = _.defaultTo(process.env.DISCORD_DEPOSIT_THRESHOLD, 1) // 25000
+export const DISCORD_BRIBE_THRESHOLD = _.defaultTo(process.env.DISCORD_BRIBE_THRESHOLD, 1) // 250
 
-export const GLOBAL_DEPOSIT_THRESHOLD = _.defaultTo(process.env.GLOBAL_DEPOSIT_THRESHOLD, 25000)
-export const GLOBAL_SWAP_THRESHOLD = _.defaultTo(process.env.GLOBAL_SWAP_THRESHOLD, 25000)
-export const GLOBAL_BRIBE_THRESHOLD = _.defaultTo(process.env.GLOBAL_BRIBE_THRESHOLD, 250)
+export const GLOBAL_DEPOSIT_THRESHOLD = _.defaultTo(process.env.GLOBAL_DEPOSIT_THRESHOLD, 1) // 25000
+export const GLOBAL_SWAP_THRESHOLD = _.defaultTo(process.env.GLOBAL_SWAP_THRESHOLD, 1) // 25000
+export const GLOBAL_BRIBE_THRESHOLD = _.defaultTo(process.env.GLOBAL_BRIBE_THRESHOLD, 1) // 250
 
 // INTEGRATIONS
 export const TWITTER_ENABLED: boolean = _.defaultTo(
