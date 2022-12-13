@@ -8,6 +8,14 @@ export const getMergedThumbnail = async (arg0: (string | number)[], arg1: (strin
   let token0Img = `${coingeckoBaseUrl}${arg0[3] as string}`
   let token1Img = `${coingeckoBaseUrl}${arg1[3] as string}`
 
+  if (arg0[0] === 'equilibre-finance') {
+    token0Img = staticIcons.velodromeIcon
+  }
+
+  if (arg1[0] === 'equilibre-finance') {
+    token1Img = staticIcons.velodromeIcon
+  }
+
   if (arg0[0] === 'velodrome-finance') {
     token0Img = staticIcons.velodromeIcon
   }
@@ -45,6 +53,9 @@ export const getMergedThumbnail = async (arg0: (string | number)[], arg1: (strin
 
 export const getThumbnail = (arg0: (string | number)[]) => {
   let token0Img = `${coingeckoBaseUrl}${arg0[3] as string}`
+  if (arg0[0] === 'equilibre-finance') {
+    token0Img = staticIcons.velodromeIcon
+  }
   if (arg0[0] === 'velodrome-finance') {
     token0Img = staticIcons.velodromeIcon
   }
