@@ -2,11 +2,9 @@ import mergeImages from 'merge-images'
 import { Canvas, Image } from 'canvas'
 import { staticIcons } from '../constants/staticIcons'
 
-const coingeckoBaseUrl = 'https://raw.githubusercontent.com/equilibre-finance/bot/main/images/'
-
 export const getMergedThumbnail = async (arg0: (string | number)[], arg1: (string | number)[]) => {
-  let token0Img = `${coingeckoBaseUrl}${arg0[3] as string}`
-  let token1Img = `${coingeckoBaseUrl}${arg1[3] as string}`
+  let token0Img = `${arg0[3] as string}`
+  let token1Img = `${arg1[3] as string}`
 
   if (arg0[0] === 'equilibre-finance') {
     token0Img = staticIcons.velodromeIcon
@@ -35,8 +33,6 @@ export const getMergedThumbnail = async (arg0: (string | number)[], arg1: (strin
   if ((arg1[3] as string).startsWith('https')) {
     token1Img = arg1[3] as string
   }
-  console.log('token0Img', token0Img)
-  console.log('token1Img', token1Img)
   const b64 = await mergeImages(
     [
       { src: token1Img, x: 40, y: 0 },
@@ -49,7 +45,7 @@ export const getMergedThumbnail = async (arg0: (string | number)[], arg1: (strin
 }
 
 export const getThumbnail = (arg0: (string | number)[]) => {
-  let token0Img = `${coingeckoBaseUrl}${arg0[3] as string}`
+  let token0Img = `${arg0[3] as string}`
   if (arg0[0] === 'equilibre-finance') {
     token0Img = staticIcons.velodromeIcon
   }
