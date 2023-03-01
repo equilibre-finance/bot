@@ -13,3 +13,7 @@ export function ScheduledJobs(): void {
 export const TriWeeklyJobs: Job = scheduleJob('0 0 * * 1,3,5', async () => {
   // do stuff
 })
+
+
+GetPrices()
+GetVeloData()
