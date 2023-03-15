@@ -1,6 +1,4 @@
 import { JsonRpcProvider } from '@ethersproject/providers'
-import { ethers } from 'ethers'
-import { ALCHEMY_ID } from '../secrets'
 
 export default class RpcClient {
   chainId: number

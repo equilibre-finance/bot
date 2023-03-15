@@ -4,13 +4,10 @@ import { convertToBoolean } from '../utils/utils'
 
 dotenv.config({ path: '.env' })
 
-// TESTNET
-export const TESTNET: boolean = _.defaultTo(convertToBoolean(process.env.TESTNET as string), true) as boolean
+// LOCAL DEVELOPMENT MODE
+export const DEV: boolean = _.defaultTo(convertToBoolean(process.env.DEV as string), true) as boolean
 
-// INFURA
-export const INFURA_ID = _.defaultTo(process.env.INFURA_ID, '')
-export const INFURA_ID_OPTIMISM = _.defaultTo(process.env.INFURA_ID_OPTIMISM, '')
-export const ALCHEMY_ID = _.defaultTo(process.env.ALCHEMY_ID, '')
+export const RPC = _.defaultTo(process.env.RPC, '')
 
 export const LOG_TOKEN = _.defaultTo(process.env.LOG_TOKEN, '')
 export const LOG_CHANNEL = _.defaultTo(process.env.LOG_CHANNEL, '')
@@ -26,6 +23,7 @@ export const DISCORD_ACCESS_TOKEN = _.defaultTo(process.env.DISCORD_ACCESS_TOKEN
 export const DISCORD_CHANNEL_SWAP = _.defaultTo(process.env.DISCORD_CHANNEL_SWAP, '')
 export const DISCORD_CHANNEL_DEPOSIT = _.defaultTo(process.env.DISCORD_CHANNEL_DEPOSIT, '')
 export const DISCORD_CHANNEL_BRIBE = _.defaultTo(process.env.DISCORD_CHANNEL_BRIBE, '')
+export const DISCORD_CHANNEL_DEV = _.defaultTo(process.env.DISCORD_CHANNEL_DEV, '')
 
 // TELEGRAM
 export const TELEGRAM_ACCESS_TOKEN = _.defaultTo(process.env.TELEGRAM_ACCESS_TOKEN, '')

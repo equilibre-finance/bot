@@ -23,7 +23,7 @@ export async function GetPrices(): Promise<void> {
             global.TOKEN_PRICES[token_id] = '0'
           }else {
             const tokenPrice = resp.data[token_id].usd
-            console.log(`${token_id} Token Price: ${tokenPrice}`)
+            // console.log(`${token_id} Token Price: ${tokenPrice}`)
             global.TOKEN_PRICES[token_id] = tokenPrice
           }
         } catch (e) {

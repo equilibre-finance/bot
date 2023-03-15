@@ -1,13 +1,15 @@
 import { Telegraf } from 'telegraf'
 import { goBot } from './bot'
 import { PostTelegram } from './integrations/telegram'
-import { LOG_CHANNEL, LOG_TOKEN } from './secrets'
+import {DEV, LOG_CHANNEL, LOG_TOKEN} from './secrets'
 
 async function Initialize(): Promise<void> {
   try {
-    RegisterShutdownEvents()
-    await Notifier(false)
-    await goBot()
+    if( ! DEV ) {
+      RegisterShutdownEvents()
+      await Notifier(false)
+    }
+    await goBot(DEV)
   } catch (error) {
     console.error(error)
   }

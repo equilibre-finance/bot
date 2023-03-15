@@ -6,13 +6,14 @@ import { EventType } from '../constants/eventType'
 import { PostDiscord } from '../integrations/discord'
 import { SendTweet } from '../integrations/twitter'
 import {
+  DEV,
   TWITTER_ENABLED,
-  TESTNET,
   DISCORD_ENABLED,
   GLOBAL_SWAP_THRESHOLD,
   DISCORD_CHANNEL_SWAP,
   DISCORD_CHANNEL_DEPOSIT,
   DISCORD_CHANNEL_BRIBE,
+  DISCORD_CHANNEL_DEV,
   GLOBAL_DEPOSIT_THRESHOLD,
   DISCORD_DEPOSIT_THRESHOLD,
   GLOBAL_BRIBE_THRESHOLD,
@@ -46,8 +47,8 @@ export async function BroadCast<T extends BaseEvent>(
       }
     }
 
-    if (TESTNET) {
-      console.log(post)
+    if (DEV) {
+      console.log('[dev twitter]', post)
     } else {
       if (post != '') {
         await SendTweet(post, twitterClient)
@@ -79,26 +80,29 @@ export async function BroadCast<T extends BaseEvent>(
       }
     }
 
-    if (TESTNET) {
-      printObject(embed)
-    } else {
-      if (embed.length > 0) {
-        let channel = ''
+    if (embed.length > 0) {
+      let channel = ''
 
-        if (dto.eventType == EventType.Swap) {
-          channel = DISCORD_CHANNEL_SWAP
-        }
-
-        if (dto.eventType == EventType.Deposit) {
-          channel = DISCORD_CHANNEL_DEPOSIT
-        }
-
-        if (dto.eventType == EventType.Bribe) {
-          channel = DISCORD_CHANNEL_BRIBE
-        }
-
-        await PostDiscord(embed, discordClient, channel, att)
+      if (dto.eventType == EventType.Swap) {
+        channel = DISCORD_CHANNEL_SWAP
       }
+
+      if (dto.eventType == EventType.Deposit) {
+        channel = DISCORD_CHANNEL_DEPOSIT
+      }
+
+      if (dto.eventType == EventType.Bribe) {
+        channel = DISCORD_CHANNEL_BRIBE
+      }
+
+      if( DEV ){
+        channel = DISCORD_CHANNEL_DEV;
+        console.log('[dev discord]')
+        printObject(embed)
+      }
+
+      await PostDiscord(embed, discordClient, channel, att)
     }
+
   }
 }
