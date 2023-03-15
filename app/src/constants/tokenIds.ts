@@ -9,7 +9,7 @@ export const TOKENS: { [key: string]: (string | number)[] } = {
   '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b': ['wbtc', 'WBTC', 8, 'https://assets.coingecko.com/coins/images/7598/large/wrapped_bitcoin_wbtc.png?1548822744'],
   '0xc19281f22a075e0f10351cd5d6ea9f0ac63d4327': ['bifi', 'BIFI', 18, 'https://assets.coingecko.com/coins/images/12704/large/token.png?1601876182'],
   '0x6c2c113c8ca73db67224ef4d8c8dfcec61e52a9c': ['lqdr', 'LQDR', 18, 'https://assets.coingecko.com/coins/images/15782/large/LQDR_Glowing_Icon.png?1631200053'],
-  '0xb84df10966a5d7e1ab46d9276f55d57bd336afc7': ['mai', 'MAIR', 18, 'https://assets.coingecko.com/coins/images/15264/large/mimatic-red.png?1620281018'],
+  '0xb84df10966a5d7e1ab46d9276f55d57bd336afc7': ['mai', 'MAI', 18, 'https://assets.coingecko.com/coins/images/15264/large/mimatic-red.png?1620281018'],
   '0xdb0e1e86b01c4ad25241b1843e407efc4d615248': ['usx', 'USX', 18, 'https://raw.githubusercontent.com/dforce-network/documents/master/logos/Lending/Assets(256*256)PNG/USX.png'],
   '0x739ca6d71365a08f584c8fc4e1029045fa8abc4b': ['acs', 'ACS', 18, 'https://assets.coingecko.com/coins/images/13276/large/ACS_logo.png?1634800304'],
 }
