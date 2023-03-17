@@ -97,8 +97,8 @@ export async function BroadCast<T extends BaseEvent>(
 
       if( DEV ){
         channel = DISCORD_CHANNEL_DEV;
-        console.log('[dev discord]')
-        printObject(embed)
+        // console.log('[dev discord]')
+        // printObject(embed)
       }
 
       await PostDiscord(embed, discordClient, channel, att)

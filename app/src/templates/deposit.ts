@@ -13,7 +13,7 @@ export function DepositTwitter(dto: DepositDto) {
     post.push(`from ${dto.fromEns ? dto.fromEns : dto.notableFrom ? dto.from : '🧑 ' + dto.fromAddress}\n`)
   }
   post.push(`🔗 ${EtherScanTransactionLink(dto.transactionHash)}\n\n`)
-  post.push(`Trade and earn on Èquilibre today 👇\n`)
+  post.push(`Trade and earn on Équilibre today 👇\n`)
   post.push(`https://equilibrefinance.com`)
   return post.join('')
 }
@@ -25,7 +25,7 @@ export function DepositDiscord(dto: DepositDto): EmbedBuilder[] {
     .setURL(`${EtherScanTransactionLink(dto.transactionHash)}`)
     .setFooter({
       iconURL: staticIcons.velodromeIconSmall,
-      text: `Èquilibre`,
+      text: `Équilibre`,
     })
     .setTimestamp()
     .setThumbnail('attachment://buffer.png')

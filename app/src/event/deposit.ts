@@ -57,6 +57,7 @@ export async function TrackDeposit(
         const token1Amount = fromBigNumber(event.args.amount1, token1[2] as number as number)
         const token0Price = await PriceToken(token0, pair?.token0_address.toLowerCase() as string)
         const token0Value = token0Amount * (token0Price as unknown as number)
+
         const token1Price = await PriceToken(token1, pair?.token1_address.toLowerCase() as string)
         const token1Value = token1Amount * (token1Price as unknown as number)
         const totalValue = token0Value + token1Value
@@ -100,8 +101,7 @@ export async function TrackDeposit(
                 imageUrl: '',
                 img64: img64,
             }
-            console.log(dto);
-            // await BroadCast(dto, twitterClient, telegramClient, discordClient)
+            await BroadCast(dto, twitterClient, telegramClient, discordClient)
         } else {
             console.log(`Deposit found: $${totalValue}, smaller than ${DISCORD_DEPOSIT_THRESHOLD} threshold.`)
         }
