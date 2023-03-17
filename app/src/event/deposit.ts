@@ -47,8 +47,11 @@ export async function TrackDeposit(
         const token0 = TOKENS[pair?.token0_address.toLowerCase() as string]
         const token1 = TOKENS[pair?.token1_address.toLowerCase() as string]
 
-        if (token0 === undefined || token1 === undefined) {
+        if (token0 === undefined ) {
             console.log('[deposits] Token 0 not found: ' + pair?.token0_address)
+            return
+        }
+        if ( token1 === undefined) {
             console.log('[deposits] Token 1 not found: ' + pair?.token1_address)
             return
         }
