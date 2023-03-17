@@ -2,7 +2,7 @@ import { Telegraf } from 'telegraf'
 import { goBot } from './bot'
 import { PostTelegram } from './integrations/telegram'
 import {DEV, LOG_CHANNEL, LOG_TOKEN} from './secrets'
-
+console.log('DEV', DEV);
 async function Initialize(): Promise<void> {
   try {
     if( ! DEV ) {
