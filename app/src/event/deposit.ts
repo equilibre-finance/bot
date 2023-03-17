@@ -38,7 +38,7 @@ export async function TrackDeposit(
         })
 
         if (pairs.length == 0) {
-            PostTelegram('PAIR not found in API', telegramClient)
+            console.log('PAIR not found in API')
             return
         }
 
@@ -48,8 +48,8 @@ export async function TrackDeposit(
         const token1 = TOKENS[pair?.token1_address.toLowerCase() as string]
 
         if (token0 === undefined || token1 === undefined) {
-            PostTelegram('[deposits] Token 0 not found: ' + pair?.token0_address, telegramClient)
-            PostTelegram('[deposits] Token 1 not found: ' + pair?.token1_address, telegramClient)
+            console.log('[deposits] Token 0 not found: ' + pair?.token0_address)
+            console.log('[deposits] Token 1 not found: ' + pair?.token1_address)
             return
         }
 
@@ -63,14 +63,14 @@ export async function TrackDeposit(
         const totalValue = token0Value + token1Value
 
         if ( isNaN(totalValue) )
-            PostTelegram('[deposits] totalValue is NaN: Token: ' + pair?.token1_address, telegramClient)
+            console.log('[deposits] totalValue is NaN: Token: ' + pair?.token1_address)
         else if (totalValue >= DISCORD_DEPOSIT_THRESHOLD) {
             console.log(`Deposit found: $${totalValue}`)
             try {
                 timestamp = (await rpcClient.provider.getBlock(event.blockNumber)).timestamp
             } catch (ex:any) {
                 console.log(ex)
-                PostTelegram(`Error getting block number ${event.blockNumber}: \n${ex.toString()}`, telegramClient)
+                console.log(`Error getting block number ${event.blockNumber}: \n${ex.toString()}`)
             }
 
             const from = GetNotableAddress(event.args.sender)
