@@ -5,7 +5,7 @@ import { convertToBoolean } from '../utils/utils'
 dotenv.config({ path: '.env' })
 
 // LOCAL DEVELOPMENT MODE
-export const DEV: boolean = _.defaultTo(convertToBoolean(process.env.DEV as string), true) as boolean
+export const DEV: boolean = _.defaultTo(convertToBoolean(process.env.DEV as string), false) as boolean
 
 export const RPC = _.defaultTo(process.env.RPC, '')
 
