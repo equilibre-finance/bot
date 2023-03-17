@@ -56,9 +56,7 @@ export const getMergedThumbnail = async (arg0: (string | number)[], arg1: (strin
     if (!fs.existsSync(cache0)) {
         const cache0Downloaded = `/tmp/${hash0}-download.png`;
         await downloadFile(token0Img, cache0Downloaded);
-        console.log('a')
         await sharp(cache0Downloaded).resize(55).toFile(cache0);
-        console.log('b')
     }
     if (!fs.existsSync(cache1)) {
         const cache1Downloaded = `/tmp/${hash1}-download.png`;
