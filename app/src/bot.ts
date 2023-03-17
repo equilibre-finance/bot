@@ -33,7 +33,8 @@ export async function goBot(dev: boolean) {
     global.BRIBE_ADDRESSES = []
 
     await Promise.all([GetPrices(), await GetVeloData()])
-    await LoopOnEvents(discordClient, telegramClient, twitterClient, rpcClient)
+    // await LoopOnEvents(discordClient, telegramClient, twitterClient, rpcClient)
+    await TrackEvents(discordClient, telegramClient, twitterClient, rpcClient)
 
     ScheduledJobs()
 
