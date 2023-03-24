@@ -13,4 +13,6 @@ export const TOKENS: { [key: string]: (string | number)[] } = {
   '0xdb0e1e86b01c4ad25241b1843e407efc4d615248': ['usx', 'USX', 18, 'https://raw.githubusercontent.com/dforce-network/documents/master/logos/Lending/Assets(256*256)PNG/USX.png'],
   '0x739ca6d71365a08f584c8fc4e1029045fa8abc4b': ['acs', 'ACS', 18, 'https://assets.coingecko.com/coins/images/13276/large/ACS_logo.png?1634800304'],
   '0x165dbb08de0476271714952c3c1f068693bd60d7': ['tarot', 'TAROT', 18, 'https://assets.coingecko.com/coins/images/17881/small/tarot-200px.png?1629704943'],
+  '0xABd380327Fe66724FFDa91A87c772FB8D00bE488': ['bnb', 'BNB', 18, 'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png?1644979850'],
+  '0xEB466342C4d449BC9f53A865D5Cb90586f405215': ['axlUSDC', 'axlUSDC', 6, 'https://assets.coingecko.com/coins/images/26476/small/axlUSDC.png?1658207579'],
 }
