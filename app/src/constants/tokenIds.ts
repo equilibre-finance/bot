@@ -15,4 +15,5 @@ export const TOKENS: { [key: string]: (string | number)[] } = {
   '0x165dbb08de0476271714952c3c1f068693bd60d7': ['tarot', 'TAROT', 18, 'https://assets.coingecko.com/coins/images/17881/small/tarot-200px.png?1629704943'],
   '0xABd380327Fe66724FFDa91A87c772FB8D00bE488': ['bnb', 'BNB', 18, 'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png?1644979850'],
   '0xEB466342C4d449BC9f53A865D5Cb90586f405215': ['axlUSDC', 'axlUSDC', 6, 'https://assets.coingecko.com/coins/images/26476/small/axlUSDC.png?1658207579'],
+  '0xd86c8d4279ccafbec840c782bcc50d201f277419': ['mare', 'mare', 18, 'https://assets.coingecko.com/coins/images/29288/small/mare-icon.png?1677809932'],
 }
