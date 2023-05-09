@@ -19,7 +19,7 @@ export function SwapTwitter(dto: SwapDto) {
   post.push(`🔗 ${EtherScanTransactionLink(dto.transactionHash)}\n\n`)
   post.push(`Trade and earn on Équilibre today 👇\n`)
   post.push(`https://equilibrefinance.com`)
-  console.log('twitter', post.join(''));
+  // console.log('twitter', post.join(''));
   return post.join('')
 }
 
@@ -56,7 +56,7 @@ export function SwapDiscord(dto: SwapDto): EmbedBuilder[] {
     discord2(dto.amount0Out, dto.token0Symbol, dto.amount0OutValue, embed)
   }
   messageEmbeds.push(embed)
-  console.log('discord', embed.toJSON());
+  // console.log('discord', embed.toJSON());
   return messageEmbeds
 }
 

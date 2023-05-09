@@ -72,7 +72,7 @@ export async function TrackDeposit(
         if ( isNaN(totalValue) )
             console.log('[deposits] totalValue is NaN: Token: ' + pair?.token1_address)
         else if (totalValue >= DISCORD_DEPOSIT_THRESHOLD) {
-            console.log(`*Deposit found: $${totalValue}>=${DISCORD_DEPOSIT_THRESHOLD}`)
+            console.log(`*Deposit found: $${totalValue}>=${DISCORD_DEPOSIT_THRESHOLD} ${pair?.token0_address}/${pair?.token1_address}`)
             try {
                 timestamp = (await rpcClient.provider.getBlock(event.blockNumber)).timestamp
             } catch (ex:any) {

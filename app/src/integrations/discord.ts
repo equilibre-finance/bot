@@ -10,14 +10,14 @@ export async function PostDiscord(
     const channels = client.channels.cache
       .filter((value) => (value as TextChannel)?.name == channelName)
       .map(async (channel) => {
-        console.log(`found channel: ${channelName}`)
+        // console.log(`found channel: ${channelName}`)
         await (channel as TextChannel).send({ embeds: embeds, files: files })
       })
   } catch (e: any) {
-    console.log(e)
+    console.log('channelName', channelName, e)
   }
 }
 
 export async function defaultActivity(client: Client<boolean>) {
-  client.user?.setActivity(`Velodrome Pools`, { type: ActivityType.Watching })
+  client.user?.setActivity(`Equilibre Pools`, { type: ActivityType.Watching })
 }
