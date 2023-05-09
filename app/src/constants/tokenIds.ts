@@ -17,4 +17,5 @@ export const TOKENS: { [key: string]: (string | number)[] } = {
   '0xeb466342c4d449bc9f53a865d5cb90586f405215': ['axlUSDC', 'axlUSDC', 6, 'https://assets.coingecko.com/coins/images/26476/small/axlUSDC.png?1658207579'],
   '0xd86c8d4279ccafbec840c782bcc50d201f277419': ['mare', 'MARE', 18, 'https://assets.coingecko.com/coins/images/29288/small/mare-icon.png?1677809932'],
   '0x990e157fc8a492c28f5b50022f000183131b9026': ['konk', 'KONK', 9, 'https://github.com/equilibre-finance/token-images/blob/10bb88a7c5d41b9884341588575d133db2297b10/assets/KONK.png'],
+  '0x8549724fcc84ee9ee6c7a676f1ba2cc2f43aaf5b': ['tore', 'TORE', 18, 'https://github.com/equilibre-finance/token-images/blob/10bb88a7c5d41b9884341588575d133db2297b10/assets/TORE.png'],
 }
