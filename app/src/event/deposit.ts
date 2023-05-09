@@ -1,4 +1,4 @@
-import {DISCORD_DEPOSIT_THRESHOLD} from '../secrets'
+import {DISCORD_DEPOSIT_THRESHOLD, TELEGRAM_CHANNEL} from '../secrets'
 import fromBigNumber from '../utils/fromBigNumber'
 import {Client} from 'discord.js'
 import {DepositDto} from '../types/dtos'
@@ -38,7 +38,9 @@ export async function TrackDeposit(
         })
 
         if (pairs.length == 0) {
-            console.log('PAIR not found in API')
+            const post = '[deposit] PAIR not found in API';
+            console.log(post)
+            await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
             return
         }
 
@@ -47,12 +49,14 @@ export async function TrackDeposit(
         const token0 = TOKENS[pair?.token0_address.toLowerCase() as string]
         const token1 = TOKENS[pair?.token1_address.toLowerCase() as string]
 
-        if (token0 === undefined ) {
-            console.log('[deposits] Token 0 not found: ' + pair?.token0_address)
-            return
-        }
-        if ( token1 === undefined) {
-            console.log('[deposits] Token 1 not found: ' + pair?.token1_address)
+        if (token0 === undefined || token1 === undefined) {
+            let post = ``;
+            if( token0 === undefined )
+                post += `[deposit] Token 0 not found: ${pair?.token0_address}\n`
+            if( token1 === undefined )
+                post += `[deposit] Token 1 not found: ${pair?.token1_address}\n`
+            console.log(post)
+            await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
             return
         }
 
@@ -68,12 +72,13 @@ export async function TrackDeposit(
         if ( isNaN(totalValue) )
             console.log('[deposits] totalValue is NaN: Token: ' + pair?.token1_address)
         else if (totalValue >= DISCORD_DEPOSIT_THRESHOLD) {
-            console.log(`Deposit found: $${totalValue}`)
+            console.log(`*Deposit found: $${totalValue}>=${DISCORD_DEPOSIT_THRESHOLD}`)
             try {
                 timestamp = (await rpcClient.provider.getBlock(event.blockNumber)).timestamp
             } catch (ex:any) {
-                console.log(ex)
-                console.log(`Error getting block number ${event.blockNumber}: \n${ex.toString()}`)
+                const post = `Error getting block number ${event.blockNumber}: \n${ex.toString()}`;
+                console.log(post)
+                await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
             }
 
             const from = GetNotableAddress(event.args.sender)
@@ -106,7 +111,7 @@ export async function TrackDeposit(
             }
             await BroadCast(dto, twitterClient, telegramClient, discordClient)
         } else {
-            console.log(`Deposit found: $${totalValue}, smaller than ${DISCORD_DEPOSIT_THRESHOLD} threshold.`)
+            //console.log(`Deposit found: $${totalValue}, smaller than ${DISCORD_DEPOSIT_THRESHOLD} threshold.`)
         }
     } catch (e) {
         console.log(e)

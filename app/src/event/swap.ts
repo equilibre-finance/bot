@@ -1,4 +1,4 @@
-import { DISCORD_SWAP_THRESHOLD } from '../secrets'
+import {DISCORD_SWAP_THRESHOLD, TELEGRAM_CHANNEL} from '../secrets'
 import fromBigNumber from '../utils/fromBigNumber'
 import { Client } from 'discord.js'
 import { SwapDto } from '../types/dtos'
@@ -40,7 +40,9 @@ export async function TrackSwap(
     })
 
     if (pairs.length == 0) {
-      console.log('PAIR not found in API')
+      const post = '[swap] PAIR not found in API';
+      console.log(post)
+      await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
       return
     }
 
@@ -50,8 +52,15 @@ export async function TrackSwap(
     const token1 = TOKENS[pair?.token1_address.toLowerCase() as string]
 
     if (token0 === undefined || token1 === undefined) {
-      console.log('[swap] Token 0 not found: ' + pair?.token0_address)
-      console.log('[swap] Token 1 not found: ' + pair?.token1_address)
+      let post = ``;
+      if( token0 === undefined )
+        post += `[swap] Token 0 not found: ${pair?.token0_address}\n`
+      if( token1 === undefined )
+        post += `[swap] Token 1 not found: ${pair?.token1_address}\n`
+      console.log(post)
+
+      await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
+
       return
     }
 
@@ -108,7 +117,7 @@ export async function TrackSwap(
 
       await BroadCast(dto, twitterClient, telegramClient, discordClient)
     } else {
-      console.log(`Swap found: $${totalValue}, smaller than ${DISCORD_SWAP_THRESHOLD} threshold.`)
+      //console.log(`Swap found: $${totalValue}, smaller than ${DISCORD_SWAP_THRESHOLD} threshold.`)
     }
   } catch (e) {
     console.log(e)

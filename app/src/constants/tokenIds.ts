@@ -13,7 +13,8 @@ export const TOKENS: { [key: string]: (string | number)[] } = {
   '0xdb0e1e86b01c4ad25241b1843e407efc4d615248': ['usx', 'USX', 18, 'https://raw.githubusercontent.com/dforce-network/documents/master/logos/Lending/Assets(256*256)PNG/USX.png'],
   '0x739ca6d71365a08f584c8fc4e1029045fa8abc4b': ['acs', 'ACS', 18, 'https://assets.coingecko.com/coins/images/13276/large/ACS_logo.png?1634800304'],
   '0x165dbb08de0476271714952c3c1f068693bd60d7': ['tarot', 'TAROT', 18, 'https://assets.coingecko.com/coins/images/17881/small/tarot-200px.png?1629704943'],
-  '0xABd380327Fe66724FFDa91A87c772FB8D00bE488': ['bnb', 'BNB', 18, 'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png?1644979850'],
-  '0xEB466342C4d449BC9f53A865D5Cb90586f405215': ['axlUSDC', 'axlUSDC', 6, 'https://assets.coingecko.com/coins/images/26476/small/axlUSDC.png?1658207579'],
-  '0xd86c8d4279ccafbec840c782bcc50d201f277419': ['mare', 'mare', 18, 'https://assets.coingecko.com/coins/images/29288/small/mare-icon.png?1677809932'],
+  '0xabd380327fe66724ffda91a87c772fb8d00be488': ['bnb', 'BNB', 18, 'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png?1644979850'],
+  '0xeb466342c4d449bc9f53a865d5cb90586f405215': ['axlUSDC', 'axlUSDC', 6, 'https://assets.coingecko.com/coins/images/26476/small/axlUSDC.png?1658207579'],
+  '0xd86c8d4279ccafbec840c782bcc50d201f277419': ['mare', 'MARE', 18, 'https://assets.coingecko.com/coins/images/29288/small/mare-icon.png?1677809932'],
+  '0x990e157fc8a492c28f5b50022f000183131b9026': ['konk', 'KONK', 9, 'https://github.com/equilibre-finance/token-images/blob/10bb88a7c5d41b9884341588575d133db2297b10/assets/KONK.png'],
 }

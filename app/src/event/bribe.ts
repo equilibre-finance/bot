@@ -1,4 +1,4 @@
-import { DISCORD_BRIBE_THRESHOLD } from '../secrets'
+import {DISCORD_BRIBE_THRESHOLD, TELEGRAM_CHANNEL} from '../secrets'
 import fromBigNumber from '../utils/fromBigNumber'
 import { Client } from 'discord.js'
 import { BribeDto } from '../types/dtos'
@@ -42,7 +42,9 @@ export async function TrackBribe(
       })
 
       if (pairs.length == 0) {
-        console.log('PAIR not found in API')
+        const post = '[bribe] PAIR not found in API';
+        console.log(post)
+        await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
         return
       }
 
@@ -54,8 +56,13 @@ export async function TrackBribe(
       const token1 = TOKENS[pair?.token1_address.toLowerCase() as string]
 
       if (token0 === undefined || token1 === undefined) {
-        console.log('[bribe] Token 0 not found' + pair?.token0_address)
-        console.log('[bribe] Token 1 not found' + pair?.token1_address)
+        let post = ``;
+        if( token0 === undefined )
+          post += `[bribe] Token 0 not found: ${pair?.token0_address}\n`
+        if( token1 === undefined )
+          post += `[bribe] Token 1 not found: ${pair?.token1_address}\n`
+        console.log(post)
+        await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
         return
       }
 
@@ -90,13 +97,15 @@ export async function TrackBribe(
 
         await BroadCast(dto, twitterClient, telegramClient, discordClient)
       } else {
-        console.log(`Bribe found: $${value}, smaller than ${DISCORD_BRIBE_THRESHOLD} threshold.`)
+        //console.log(`Bribe found: $${value}, smaller than ${DISCORD_BRIBE_THRESHOLD} threshold.`)
       }
     } catch (e) {
       console.log(e)
     }
   } else {
-    console.log('Unknown bribe token - skipping')
+    const post = 'Unknown bribe token - skipping';
+    console.log(post)
+    await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
   }
 }
 
