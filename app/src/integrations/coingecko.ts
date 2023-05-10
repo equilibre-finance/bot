@@ -1,5 +1,5 @@
 import { CoinGeckoClient } from '../clients/coinGeckoClient'
-import {GetSymbols, TOKENS} from '../constants/tokenIds'
+import {GetSymbols} from '../constants/tokenIds'
 
 export async function GetPrices(): Promise<void> {
   try {

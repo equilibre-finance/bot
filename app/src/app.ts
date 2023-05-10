@@ -8,30 +8,21 @@ const telegram = new Telegraf(LOG_TOKEN)
 
 async function Initialize(): Promise<void> {
     try {
-        if (!DEV) {
-            RegisterShutdownEvents()
-            await Notifier(false)
-        }
+        RegisterShutdownEvents()
         await goBot(DEV)
     } catch (error: any) {
-        console.error(error)
+        console.error('[Initialize]', error.toString())
         await PostTelegram(error.toString(), telegram, LOG_CHANNEL)
     }
 }
 
-async function Notifier(isDown = true) {
-    await PostTelegram(`Bot ${isDown ? 'Down' : 'Up'}\n`, telegram, LOG_CHANNEL)
-}
-
 function RegisterShutdownEvents(): void {
     process
-        .on('beforeExit', async (code) => {
-            console.log('Process beforeExit event with code: ', code);
-            // await Notifier().then(process.exit(code))
-        })
         .on('unhandledRejection', async function (reason: any, p) {
-            console.error(reason, 'Unhandled Rejection at Promise', p);
+            console.error('Unhandled Rejection at Promise', reason.toString());
             await PostTelegram(reason.toString(), telegram, LOG_CHANNEL)
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            await goBot(DEV)
         })
         .on('uncaughtException', async function (err) {
             console.error(err, 'Uncaught Exception thrown');

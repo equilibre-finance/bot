@@ -16,8 +16,8 @@ import { getMergedThumbnail } from '../utils/mergedImage'
 import { EventType } from '../constants/eventType'
 import { BroadCast } from './common'
 import { Pair } from '../types/velo'
-import { TOKENS } from '../constants/tokenIds'
 import { PriceToken } from './pricing'
+import {GetTokens} from "../constants/tokenIds";
 
 export async function TrackSwap(
   discordClient: Client<boolean>,
@@ -26,6 +26,8 @@ export async function TrackSwap(
   rpcClient: RpcClient,
   genericEvent: GenericEvent,
 ): Promise<void> {
+
+  const TOKENS = GetTokens()
   const event = parseEvent(genericEvent as SwapEvent)
 
   try {

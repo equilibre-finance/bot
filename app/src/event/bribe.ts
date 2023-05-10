@@ -14,11 +14,11 @@ import { getMergedThumbnail } from '../utils/mergedImage'
 import { EventType } from '../constants/eventType'
 import { BroadCast } from './common'
 import { NotifyRewardEvent } from '../contracts/typechain/WrappedExternalBribe'
-import { TOKENS } from '../constants/tokenIds'
 import { GetEns } from '../integrations/ens'
 import printObject from '../utils/printObject'
 import { PriceToken } from './pricing'
 import { Pair } from '../types/velo'
+import {GetTokens} from "../constants/tokenIds";
 
 export async function TrackBribe(
   discordClient: Client<boolean>,
@@ -28,6 +28,7 @@ export async function TrackBribe(
   genericEvent: GenericEvent,
 ): Promise<void> {
   const event = parseEvent(genericEvent as NotifyRewardEvent)
+  const TOKENS = GetTokens()
   const bribeToken = TOKENS[event.args.reward.toLowerCase()]
 
   if (bribeToken !== undefined) {

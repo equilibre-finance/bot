@@ -18,6 +18,9 @@ export function BribeTwitter(dto: BribeDto) {
 }
 
 export function BribeDiscord(dto: BribeDto): EmbedBuilder[] {
+  const title = `$${FN(dto.value, 2)} ${dto.token0Symbol}/${dto.token1Symbol} Bribe`
+  console.log(`[bribe] ${title}`)
+
   const messageEmbeds: EmbedBuilder[] = []
   const embed = new EmbedBuilder()
     .setColor('#00ff7f')
@@ -28,7 +31,7 @@ export function BribeDiscord(dto: BribeDto): EmbedBuilder[] {
     })
     .setTimestamp()
     .setThumbnail('attachment://buffer.png')
-    .setTitle(`$${FN(dto.value, 2)} ${dto.token0Symbol}/${dto.token1Symbol} Bribe`)
+    .setTitle(title)
     .addFields(
       {
         name: `Pool`,

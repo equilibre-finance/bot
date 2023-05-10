@@ -27,7 +27,14 @@ export class BlockEvent {
       let prevBlock = block
 
       const poll = async () => {
-        const latestBlock = await rpcClient.provider.getBlock('latest')
+        let latestBlock
+        try {
+            latestBlock = await rpcClient.provider.getBlock('latest')
+        }catch(e){
+            console.warn('Failed to get latest block', e)
+            setTimeout(poll, ms)
+            return
+        }
         const fromBlockNumber = prevBlock.number + 1
         const toBlockNumber = latestBlock.number
         if (fromBlockNumber >= toBlockNumber) {
@@ -58,7 +65,7 @@ export class BlockEvent {
             }),
           )
         } catch (e) {
-          console.warn('Failed to get eth_logs')
+          console.warn('Failed to get eth_logs', e)
         }
 
         prevBlock = latestBlock

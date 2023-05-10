@@ -15,9 +15,9 @@ import {getMergedThumbnail} from '../utils/mergedImage'
 import {EventType} from '../constants/eventType'
 import {BroadCast} from './common'
 import {Pair} from '../types/velo'
-import {TOKENS} from '../constants/tokenIds'
 import {PriceToken} from './pricing'
 import {PostTelegram} from "../integrations/telegram";
+import {GetTokens} from "../constants/tokenIds";
 
 export async function TrackDeposit(
     discordClient: Client<boolean>,
@@ -26,6 +26,7 @@ export async function TrackDeposit(
     rpcClient: RpcClient,
     genericEvent: GenericEvent,
 ): Promise<void> {
+    const TOKENS = GetTokens()
     const event = parseEvent(genericEvent as MintEvent)
     try {
         let timestamp = 0

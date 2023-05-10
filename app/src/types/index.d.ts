@@ -11,6 +11,9 @@ declare global {
   var TOKEN_DATA: TokenInfo[]
   var BRIBE_ADDRESSES: string[]
   var PAIR_ADDRESSES: string[]
+
+  var TOKENS: { [key: string]: (string | number)[] } = {}
+
 }
 
 export {}
