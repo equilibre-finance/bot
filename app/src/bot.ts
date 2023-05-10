@@ -13,6 +13,7 @@ import {LoopOnEvents, TrackEvents} from './event/blockEvent'
 import {ScheduledJobs} from './schedule'
 import {alchemyProvider} from './clients/ethersClient'
 import {GetVeloData} from './integrations/velo'
+import {GetTokensData} from './constants/tokenIds'
 
 let discordClient: Client<boolean>
 let twitterClient: TwitterApi
@@ -32,8 +33,10 @@ export async function goBot(dev: boolean) {
     global.PAIR_ADDRESSES = []
     global.BRIBE_ADDRESSES = []
 
-    await Promise.all([GetPrices(), await GetVeloData()])
-    // await LoopOnEvents(discordClient, telegramClient, twitterClient, rpcClient)
+    await GetTokensData();
+    await GetPrices();
+    await GetVeloData();
+
     await TrackEvents(discordClient, telegramClient, twitterClient, rpcClient)
 
     ScheduledJobs()

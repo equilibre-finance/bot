@@ -1,6 +1,6 @@
 /* eslint-disable no-var */
 
-import { Pair } from './velo'
+import {Pair, TokenInfo} from './velo'
 
 declare global {
   var ENS: { [key: string]: string } = {}
@@ -8,6 +8,7 @@ declare global {
   var TOKEN_PRICES: { [key: string]: string } = {}
   var TOKEN_IMAGES: { [key: string]: string } = {}
   var VELO_DATA: Pair[]
+  var TOKEN_DATA: TokenInfo[]
   var BRIBE_ADDRESSES: string[]
   var PAIR_ADDRESSES: string[]
 }

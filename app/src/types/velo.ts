@@ -1,3 +1,17 @@
+export type TokensInfoData = {
+  tokens: TokenInfo[]
+}
+
+export type TokenInfo = {
+  chainId: number
+  decimals: number
+  name: string
+  symbol: string
+  address: string
+  logoURI: string
+}
+
+
 export type VeloData = {
   data: Pair[]
 }
