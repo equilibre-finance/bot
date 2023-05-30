@@ -9,60 +9,68 @@ import {defaultActivity} from './integrations/discord'
 import {TwitterClient} from './clients/twitterClient'
 import {TelegramClient} from './clients/telegramClient'
 import {GetPrices} from './integrations/coingecko'
-import {LoopOnEvents, TrackEvents} from './event/blockEvent'
-import {ScheduledJobs} from './schedule'
+import {TrackEvents} from './event/blockEvent'
 import {alchemyProvider} from './clients/ethersClient'
 import {GetVeloData} from './integrations/velo'
 import {GetTokensData} from './constants/tokenIds'
+let botIndex = 0;
+export class Bot{
+    discordClient: Client<boolean> = DiscordClient
+    twitterClient: TwitterApi = TwitterClient
+    telegramClient: Telegraf<Context<Update>> = TelegramClient
+    rpcClient = new RpcClient(alchemyProvider)
+    alarm: NodeJS.Timeout | undefined
+    async init(dev: boolean) {
+        botIndex++;
+        console.log(`[${botIndex}] bot init...`)
+        await this.SetUpDiscord()
+        await this.SetUpTwitter()
+        await this.SetUpTelegram()
 
-let discordClient: Client<boolean>
-let twitterClient: TwitterApi
-let telegramClient: Telegraf<Context<Update>>
+        global.ENS = {}
+        if (!global.TOKEN_PRICES)
+            global.TOKEN_PRICES = {}
+        global.TOKEN_IMAGES = {}
+        global.VELO_DATA = []
+        global.PAIR_ADDRESSES = []
+        global.BRIBE_ADDRESSES = []
+    
+        await GetTokensData();
+        await GetPrices();
+        await GetVeloData();
 
-export async function goBot(dev: boolean) {
-    const rpcClient = new RpcClient(alchemyProvider)
-    await Promise.all([SetUpDiscord(), SetUpTwitter()])
+        this.alarm = setInterval(async () => {
+            console.log(`[${botIndex}] Updating data...`)
+            await GetTokensData()
+            await GetPrices()
+            await GetVeloData()
+        }, 20 * 60 * 1000);
 
-    await SetUpTelegram()
+        await TrackEvents(botIndex, this.discordClient, this.telegramClient, this.twitterClient, this.rpcClient)
 
-    global.ENS = {}
-    if (!global.TOKEN_PRICES)
-        global.TOKEN_PRICES = {}
-    global.TOKEN_IMAGES = {}
-    global.VELO_DATA = []
-    global.PAIR_ADDRESSES = []
-    global.BRIBE_ADDRESSES = []
-
-    await GetTokensData();
-    await GetPrices();
-    await GetVeloData();
-
-    await TrackEvents(discordClient, telegramClient, twitterClient, rpcClient)
-
-    ScheduledJobs()
-
-}
-
-export async function SetUpDiscord() {
-    if (DISCORD_ENABLED) {
-        discordClient = DiscordClient
-        discordClient.on('ready', async (client) => {
-            console.debug('Discord Bot is online!')
-        })
-        await discordClient.login(DISCORD_ACCESS_TOKEN)
-        await defaultActivity(discordClient)
     }
-}
-
-export async function SetUpTwitter() {
-    if (TWITTER_ENABLED) {
-        twitterClient = TwitterClient
-        twitterClient.readWrite
+    
+    async SetUpDiscord() {
+        if (DISCORD_ENABLED) {
+            this.discordClient = DiscordClient
+            this.discordClient.on('ready', async (client) => {
+                console.debug(`[${botIndex}] Discord ${client.user?.tag}!`)
+            })
+            await this.discordClient.login(DISCORD_ACCESS_TOKEN)
+            await defaultActivity(this.discordClient)
+        }
     }
-}
-
-export async function SetUpTelegram() {
-    if (TELEGRAM_ENABLED) {
-        telegramClient = TelegramClient
+    
+    async SetUpTwitter() {
+        if (TWITTER_ENABLED) {
+            this.twitterClient = TwitterClient
+            this.twitterClient.readWrite
+        }
+    }
+    
+    async SetUpTelegram() {
+        if (TELEGRAM_ENABLED) {
+            this.telegramClient = TelegramClient
+        }
     }
 }

@@ -44,12 +44,13 @@ export async function LoopOnEvents(
 
 
 export async function TrackEvents(
+    botIndex: number,
     discordClient: Client<boolean>,
     telegramClient: Telegraf<Context<Update>>,
     twitterClient: TwitterApi,
     rpcClient: RpcClient,
 ): Promise<void> {
-    console.log('### Polling Events ###')
+    console.log(`[${botIndex}] ### Polling Events ###`)
     const blockNumber: number | undefined = undefined
     const pollInterval = 60000
     try{
@@ -72,8 +73,8 @@ export async function TrackEvents(
             },
         )
     }catch (e) {
-        console.log('TrackEvents', e)
+        console.log(`[${botIndex}] TrackEvents`, e);
         await new Promise(resolve => setTimeout(resolve, 10000));
-        await TrackEvents(discordClient, telegramClient, twitterClient, rpcClient)
+        await TrackEvents(botIndex, discordClient, telegramClient, twitterClient, rpcClient)
     }
 }
