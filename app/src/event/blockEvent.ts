@@ -80,6 +80,8 @@ export async function TrackEvents(
 
                     // Restart the event processing with the blockNumber equal to the event that was lost
                     blockNumber = event.blockNumber;
+
+                    console.log(`Event lost. Restarting event processing from block ${blockNumber}`);
                 }
             },
             {
@@ -91,6 +93,9 @@ export async function TrackEvents(
         );
     } catch (e) {
         console.error(`[${botIndex}] TrackEvents`, e);
+        console.log(`An error occurred. Restarting application...`);
         setTimeout(() => TrackEvents(botIndex, discordClient, telegramClient, twitterClient, rpcClient), 10000);
     }
 }
+
+
