@@ -60,7 +60,7 @@ export async function TrackEvents(
     rpcClient: RpcClient,
 ): Promise<void> {
     console.log(`[${botIndex}] ### Polling Events ###`);
-    const blockNumber: number | undefined = undefined;
+    let blockNumber: number | undefined = undefined; // Set the initial blockNumber as undefined
     const pollInterval = 60000;
 
     try {
@@ -68,9 +68,6 @@ export async function TrackEvents(
             rpcClient,
             async (event) => {
                 try {
-
-                    //console.log('Event Topic: ',event.topics[0].toLowerCase())
-
                     if (event.topics[0].toLowerCase() === MINT_TOPIC) {
                         await TrackDeposit(discordClient, telegramClient, twitterClient, rpcClient, event);
                     } else if (event.topics[0].toLowerCase() === SWAP_TOPIC) {
@@ -79,7 +76,10 @@ export async function TrackEvents(
                         await TrackBribe(discordClient, telegramClient, twitterClient, rpcClient, event);
                     }
                 } catch (innerError) {
-                    console.error(`Error processing event: ${JSON.stringify(event).substr(0,100)}\n`);
+                    console.error(`Error processing event. Address: ${event.address}. Topic: '${event.topics[0].toLowerCase()}'\n`);
+
+                    // Restart the event processing with the blockNumber equal to the event that was lost
+                    blockNumber = event.blockNumber;
                 }
             },
             {
