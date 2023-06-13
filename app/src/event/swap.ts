@@ -1,4 +1,4 @@
-import {DISCORD_SWAP_THRESHOLD, TELEGRAM_CHANNEL} from '../secrets'
+import {DISCORD_SWAP_THRESHOLD, TELEGRAM_CHANNEL, TELEGRAM_ENABLED} from '../secrets'
 import fromBigNumber from '../utils/fromBigNumber'
 import { Client } from 'discord.js'
 import { SwapDto } from '../types/dtos'
@@ -35,16 +35,20 @@ export async function TrackSwap(
 
     const pairs: Pair[] = []
 
-    VELO_DATA.map((pair) => {
+    VELO_DATA.map((pair) => {      
+
       if (pair.address?.toLowerCase() === event.address.toLowerCase()) {
         pairs.push(pair)
       }
     })
 
     if (pairs.length == 0) {
-      const post = '[swap] PAIR not found in API';
+      
+      const post = '[swap] PAIR not found in API. Address: '.concat(event.address.toLowerCase());
       console.log(post)
-      await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
+
+      if(TELEGRAM_ENABLED)
+        await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
       return
     }
 
@@ -78,7 +82,7 @@ export async function TrackSwap(
     const amount1OutValue = amount1Out * (token1Price as unknown as number)
     const totalValue = amount0In > 0 ? amount0InValue : amount1InValue
 
-    if (totalValue >= DISCORD_SWAP_THRESHOLD) {
+    if (totalValue >= Number(DISCORD_SWAP_THRESHOLD)) {
       console.log(`Swap found: $${totalValue}`)
       try {
         timestamp = (await rpcClient.provider.getBlock(event.blockNumber)).timestamp

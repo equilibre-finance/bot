@@ -1,4 +1,4 @@
-import {DISCORD_BRIBE_THRESHOLD, TELEGRAM_CHANNEL} from '../secrets'
+import {DISCORD_BRIBE_THRESHOLD, TELEGRAM_CHANNEL, TELEGRAM_ENABLED} from '../secrets'
 import fromBigNumber from '../utils/fromBigNumber'
 import { Client } from 'discord.js'
 import { BribeDto } from '../types/dtos'
@@ -43,9 +43,12 @@ export async function TrackBribe(
       })
 
       if (pairs.length == 0) {
-        const post = '[bribe] PAIR not found in API';
+        const post = '[bribe] PAIR not found in API. Address: '.concat(event.address.toLowerCase());
         console.log(post)
-        await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
+
+        if(TELEGRAM_ENABLED)
+          await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
+
         return
       }
 
@@ -63,11 +66,17 @@ export async function TrackBribe(
         if( token1 === undefined )
           post += `[bribe] Token 1 not found: ${pair?.token1_address}\n`
         console.log(post)
-        await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
+
+        if(TELEGRAM_ENABLED)
+          await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
+
         return
       }
 
-      if (value >= DISCORD_BRIBE_THRESHOLD) {
+
+      console.log(`Bribe found: $${value} checking ${DISCORD_BRIBE_THRESHOLD} threshold}`)
+
+      if (value >= Number(DISCORD_BRIBE_THRESHOLD)) {
         console.log(`Bribe found: $${value}`)
         try {
           timestamp = (await rpcClient.provider.getBlock(event.blockNumber)).timestamp
@@ -106,7 +115,10 @@ export async function TrackBribe(
   } else {
     const post = 'Unknown bribe token - skipping';
     console.log(post)
-    await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
+
+    if(TELEGRAM_ENABLED)
+      await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
+
   }
 }
 

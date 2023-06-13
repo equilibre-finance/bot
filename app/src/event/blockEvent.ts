@@ -17,31 +17,40 @@ export async function LoopOnEvents(
     twitterClient: TwitterApi,
     rpcClient: RpcClient,
 ): Promise<void> {
-    const fromBlockNumber = '3959780';
-    const toBlockNumber = '3959780';
-    const eventConfig = {
-        fromBlock: BigNumber.from(fromBlockNumber).toHexString(),
-        toBlock: BigNumber.from(toBlockNumber).toHexString(),
-        address: [...global.PAIR_ADDRESSES, ...global.BRIBE_ADDRESSES],
-        topics: [[NOTIIFY_REWARD_AMOUNT, MINT_TOPIC, SWAP_TOPIC]],
-    };
-    const e: GenericEvent[] = await rpcClient.provider.send('eth_getLogs', [
-        eventConfig
-    ])
+    try {
+        const fromBlockNumber = '3959780';
+        const toBlockNumber = '3959780';
+        const eventConfig = {
+            fromBlock: BigNumber.from(fromBlockNumber).toHexString(),
+            toBlock: BigNumber.from(toBlockNumber).toHexString(),
+            address: [...global.PAIR_ADDRESSES, ...global.BRIBE_ADDRESSES],
+            topics: [[NOTIIFY_REWARD_AMOUNT, MINT_TOPIC, SWAP_TOPIC]],
+        };
+        const e: GenericEvent[] = await rpcClient.provider.send('eth_getLogs', [
+            eventConfig
+        ]);
 
-    for( const i in e ){
-        const event = e[i]
-        if (event.topics[0].toLowerCase() === MINT_TOPIC) {
-            await TrackDeposit(discordClient, telegramClient, twitterClient, rpcClient, event)
-            break;
-        } else if (event.topics[0].toLowerCase() === SWAP_TOPIC) {
-            // await TrackSwap(discordClient, telegramClient, twitterClient, rpcClient, event)
-        } else if (event.topics[0].toLowerCase() === NOTIIFY_REWARD_AMOUNT) {
-            //await TrackBribe(discordClient, telegramClient, twitterClient, rpcClient, event)
+        for (const event of e) {
+            try {
+
+                console.log(event.topics[0].toLowerCase())
+
+                if (event.topics[0].toLowerCase() === MINT_TOPIC) {
+                    await TrackDeposit(discordClient, telegramClient, twitterClient, rpcClient, event);
+                } else if (event.topics[0].toLowerCase() === SWAP_TOPIC) {
+                    // await TrackSwap(discordClient, telegramClient, twitterClient, rpcClient, event);
+                } else if (event.topics[0].toLowerCase() === NOTIIFY_REWARD_AMOUNT) {
+                    //await TrackBribe(discordClient, telegramClient, twitterClient, rpcClient, event);
+                }
+            } catch (innerError) {                                
+
+                console.error(`Error processing event: ${event}\n`, innerError);
+            }
         }
+    } catch (error) {
+        console.error(`Error fetching events:\n`, error);
     }
 }
-
 
 export async function TrackEvents(
     botIndex: number,
@@ -50,19 +59,27 @@ export async function TrackEvents(
     twitterClient: TwitterApi,
     rpcClient: RpcClient,
 ): Promise<void> {
-    console.log(`[${botIndex}] ### Polling Events ###`)
-    const blockNumber: number | undefined = undefined
-    const pollInterval = 60000
-    try{
+    console.log(`[${botIndex}] ### Polling Events ###`);
+    const blockNumber: number | undefined = undefined;
+    const pollInterval = 60000;
+
+    try {
         BlockEvent.on(
             rpcClient,
             async (event) => {
-                if (event.topics[0].toLowerCase() === MINT_TOPIC) {
-                    await TrackDeposit(discordClient, telegramClient, twitterClient, rpcClient, event)
-                } else if (event.topics[0].toLowerCase() === SWAP_TOPIC) {
-                    await TrackSwap(discordClient, telegramClient, twitterClient, rpcClient, event)
-                } else if (event.topics[0].toLowerCase() === NOTIIFY_REWARD_AMOUNT) {
-                    await TrackBribe(discordClient, telegramClient, twitterClient, rpcClient, event)
+                try {
+
+                    //console.log('Event Topic: ',event.topics[0].toLowerCase())
+
+                    if (event.topics[0].toLowerCase() === MINT_TOPIC) {
+                        await TrackDeposit(discordClient, telegramClient, twitterClient, rpcClient, event);
+                    } else if (event.topics[0].toLowerCase() === SWAP_TOPIC) {
+                        await TrackSwap(discordClient, telegramClient, twitterClient, rpcClient, event);
+                    } else if (event.topics[0].toLowerCase() === NOTIIFY_REWARD_AMOUNT) {
+                        await TrackBribe(discordClient, telegramClient, twitterClient, rpcClient, event);
+                    }
+                } catch (innerError) {
+                    console.error(`Error processing event: ${JSON.stringify(event).substr(0,100)}\n`);
                 }
             },
             {
@@ -71,10 +88,9 @@ export async function TrackEvents(
                 topics: [NOTIIFY_REWARD_AMOUNT, MINT_TOPIC, SWAP_TOPIC],
                 pollInterval: pollInterval,
             },
-        )
-    }catch (e) {
-        console.log(`[${botIndex}] TrackEvents`, e);
-        await new Promise(resolve => setTimeout(resolve, 10000));
-        await TrackEvents(botIndex, discordClient, telegramClient, twitterClient, rpcClient)
+        );
+    } catch (e) {
+        console.error(`[${botIndex}] TrackEvents`, e);
+        setTimeout(() => TrackEvents(botIndex, discordClient, telegramClient, twitterClient, rpcClient), 10000);
     }
 }

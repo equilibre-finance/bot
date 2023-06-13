@@ -35,25 +35,31 @@ export class Bot{
         global.PAIR_ADDRESSES = []
         global.BRIBE_ADDRESSES = []
     
-        await GetTokensData();
-        await GetPrices();
-        await GetVeloData();
+            this.reload()
 
         this.alarm = setInterval(async () => {
             console.log(`[${botIndex}] Updating data...`)
-            await GetTokensData()
-            await GetPrices()
-            await GetVeloData()
+            this.reload()
         }, 20 * 60 * 1000);
 
         await TrackEvents(botIndex, this.discordClient, this.telegramClient, this.twitterClient, this.rpcClient)
 
     }
+
+    async reload() {
+        console.log(`[${botIndex}] bot reload...`)
+        await this.retryAsync(GetTokensData, 5, 3000);
+        await this.retryAsync(GetPrices, 5, 3000);
+        await this.retryAsync(GetVeloData, 5, 3000);
+    }
+
+
+    
     
     async SetUpDiscord() {
         if (DISCORD_ENABLED) {
             this.discordClient = DiscordClient
-            this.discordClient.on('ready', async (client) => {
+            this.discordClient.on('ready', async (client: any) => {
                 console.debug(`[${botIndex}] Discord ${client.user?.tag}!`)
             })
             await this.discordClient.login(DISCORD_ACCESS_TOKEN)
@@ -73,4 +79,17 @@ export class Bot{
             this.telegramClient = TelegramClient
         }
     }
+
+    async retryAsync(fn: any, maxRetries: any, retryDelay: any) {
+        for (let i = 0; i < maxRetries; i++) {
+            try {
+                return await fn();
+            } catch (error) {
+                console.error(`Error occurred. Attempt ${i + 1} of ${maxRetries}. Retrying in ${retryDelay / 1000} seconds...`);
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
+            }
+        }
+        throw new Error(`Failed after ${maxRetries} retries.`);
+    }
+    
 }

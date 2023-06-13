@@ -7,14 +7,15 @@ export async function PostDiscord(
   files: AttachmentBuilder[] | undefined,
 ) {
   try {
+    
     const channels = client.channels.cache
       .filter((value) => (value as TextChannel)?.name == channelName)
       .map(async (channel) => {
-        // console.log(`found channel: ${channelName}`)
+        console.log(`found channel: ${channelName}`)
         await (channel as TextChannel).send({ embeds: embeds, files: files })
       })
   } catch (e: any) {
-    console.log('channelName', channelName, e)
+    console.log('error channelName', channelName, e)
   }
 }
 
