@@ -10,15 +10,18 @@ const telegram = new Telegraf(LOG_TOKEN)
 
 async function initBot() {
     console.log('Initializing bot...');
-    if (bot && bot.alarm) {
+    if (bot) {
         console.log('Cleaning up existing bot...');
-        clearInterval(bot.alarm);
-        bot.alarm = undefined;
+        if(bot.alarm) {
+            clearInterval(bot.alarm);
+            bot.alarm = undefined;
+        }
         bot = null;
     }
     bot = new Bot();
     await bot.init(DEV);
 }
+
 
 async function Initialize(retryCount = 0): Promise<void> {
     try {

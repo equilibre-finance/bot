@@ -13,14 +13,17 @@ import {TrackEvents} from './event/blockEvent'
 import {alchemyProvider} from './clients/ethersClient'
 import {GetVeloData} from './integrations/velo'
 import {GetTokensData} from './constants/tokenIds'
+
 let botIndex = 0;
-export class Bot{
+
+
+export class Bot {
     discordClient: Client<boolean> = DiscordClient
     twitterClient: TwitterApi = TwitterClient
     telegramClient: Telegraf<Context<Update>> = TelegramClient
     rpcClient = new RpcClient(alchemyProvider)
     alarm: NodeJS.Timeout | undefined
-
+    isTimerRunning: boolean = false;
 
     async init(dev: boolean) {
         botIndex++;
@@ -37,18 +40,23 @@ export class Bot{
         global.PAIR_ADDRESSES = []
         global.BRIBE_ADDRESSES = []
     
-            this.reload()
+        this.reload()
+
 
         if (this.alarm) {
-            console.log(`[Bot ${botIndex}] Clearing existing alarm...`);
             clearInterval(this.alarm);
             this.alarm = undefined;
         }
-
-        this.alarm = setInterval(async () => {
-            console.log(`[Bot ${botIndex}] Updating data...`)
-            this.reload()
-        }, 20 * 60 * 1000);
+        
+        
+        if (!this.isTimerRunning) {
+            this.alarm = setInterval(async () => {
+                this.isTimerRunning = true;
+                console.log(`[Bot ${botIndex}] Updating data...`)
+                this.reload()
+                this.isTimerRunning = false;
+            }, 20 * 60 * 1000);
+        }
 
         await TrackEvents(
             botIndex,
@@ -56,15 +64,15 @@ export class Bot{
             this.telegramClient,
             this.twitterClient,
             this.rpcClient,
-          );
+        );
 
     }
 
     async reload() {
-        console.log(`[${botIndex}] bot reload...`)
-        await this.retryAsync(GetTokensData, 5, 3000);
-        await this.retryAsync(GetPrices, 5, 3000);
-        await this.retryAsync(GetVeloData, 5, 3000);
+        console.log(`[Bot ${botIndex}]  Reloading data...`)
+        await GetTokensData();
+        await GetPrices();
+        await GetVeloData();
     }
         
     async SetUpDiscord() {

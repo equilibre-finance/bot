@@ -8,49 +8,9 @@ import RpcClient from '../clients/client'
 import {TrackDeposit} from './deposit'
 import {TrackSwap} from './swap'
 import {TrackBribe} from './bribe'
-import {Event as GenericEvent} from "@ethersproject/contracts";
-import {BigNumber} from "@ethersproject/bignumber";
 
-export async function LoopOnEvents(
-    discordClient: Client<boolean>,
-    telegramClient: Telegraf<Context<Update>>,
-    twitterClient: TwitterApi,
-    rpcClient: RpcClient,
-): Promise<void> {
-    try {
-        const fromBlockNumber = '3959780';
-        const toBlockNumber = '3959780';
-        const eventConfig = {
-            fromBlock: BigNumber.from(fromBlockNumber).toHexString(),
-            toBlock: BigNumber.from(toBlockNumber).toHexString(),
-            address: [...global.PAIR_ADDRESSES, ...global.BRIBE_ADDRESSES],
-            topics: [[NOTIIFY_REWARD_AMOUNT, MINT_TOPIC, SWAP_TOPIC]],
-        };
-        const e: GenericEvent[] = await rpcClient.provider.send('eth_getLogs', [
-            eventConfig
-        ]);
-
-        for (const event of e) {
-            try {
-
-                console.log(event.topics[0].toLowerCase())
-
-                if (event.topics[0].toLowerCase() === MINT_TOPIC) {
-                    await TrackDeposit(discordClient, telegramClient, twitterClient, rpcClient, event);
-                } else if (event.topics[0].toLowerCase() === SWAP_TOPIC) {
-                    // await TrackSwap(discordClient, telegramClient, twitterClient, rpcClient, event);
-                } else if (event.topics[0].toLowerCase() === NOTIIFY_REWARD_AMOUNT) {
-                    //await TrackBribe(discordClient, telegramClient, twitterClient, rpcClient, event);
-                }
-            } catch (innerError) {                                
-
-                console.error(`[Error] Error processing event: ${event}\n`, innerError);
-            }
-        }
-    } catch (error) {
-        console.error(`[Error] Error fetching events:\n`, error);
-    }
-}
+let blockEventListener: ReturnType<typeof BlockEvent.on> | null = null;
+let isTrackEventsRunning = false;
 
 export async function TrackEvents(
     botIndex: number,
@@ -59,12 +19,25 @@ export async function TrackEvents(
     twitterClient: TwitterApi,
     rpcClient: RpcClient,
 ): Promise<void> {
-    console.log(`[${botIndex}] Polling Events`);
+
+    console.log(`[Bot ${botIndex}] ### Polling Events ###`);
     let blockNumber: number | undefined = undefined; 
     const pollInterval = 60000;
-    let blockEventListener: ReturnType<typeof BlockEvent.on> | null = null;
+
+    if (blockEventListener) {
+        console.log(`[Bot ${botIndex}] Existing BlockEvent listener found. Removing...`);
+        blockEventListener.off();
+        blockEventListener = null;
+    }
+
 
     try {
+
+        if (isTrackEventsRunning) {
+            return;
+        }
+        isTrackEventsRunning = true;
+
         blockEventListener = BlockEvent.on(
             rpcClient,
             async (event) => {
@@ -83,12 +56,12 @@ export async function TrackEvents(
                     console.error(`[Error] Not possible process event Address: ${event.address}. Blocknumber: '${blockNumberDecimal}'`); 
 
                     if (blockEventListener) {
-                        console.log(`[${botIndex}] Existing BlockEvent listener found. Removing...`);
+                        console.log(`[Bot ${botIndex}] Existing BlockEvent listener found. Removing...`);
                         blockEventListener.off();
                         blockEventListener = null;
                     }
 
-                    await TrackEvents(botIndex, discordClient, telegramClient, twitterClient, rpcClient);
+                    
                 }
             },
             {
@@ -101,6 +74,11 @@ export async function TrackEvents(
     } catch (e) {
         console.log(`[Error] An error occurred. Restarting application...`);
         setTimeout(() => TrackEvents(botIndex, discordClient, telegramClient, twitterClient, rpcClient), 10000);
+    }
+    finally {
+        if (!isTrackEventsRunning) {
+            isTrackEventsRunning = false;
+        }
     }
 }
 
