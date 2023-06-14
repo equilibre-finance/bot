@@ -44,11 +44,11 @@ export async function LoopOnEvents(
                 }
             } catch (innerError) {                                
 
-                console.error(`Error processing event: ${event}\n`, innerError);
+                console.error(`[Error] Error processing event: ${event}\n`, innerError);
             }
         }
     } catch (error) {
-        console.error(`Error fetching events:\n`, error);
+        console.error(`[Error] Error fetching events:\n`, error);
     }
 }
 
@@ -60,11 +60,12 @@ export async function TrackEvents(
     rpcClient: RpcClient,
 ): Promise<void> {
     console.log(`[${botIndex}] ### Polling Events ###`);
-    let blockNumber: number | undefined = undefined; // Set the initial blockNumber as undefined
+    let blockNumber: number | undefined = undefined; 
     const pollInterval = 60000;
+    let blockEventListener: ReturnType<typeof BlockEvent.on> | null = null;
 
     try {
-        BlockEvent.on(
+        blockEventListener = BlockEvent.on(
             rpcClient,
             async (event) => {
                 try {
@@ -79,8 +80,15 @@ export async function TrackEvents(
 
                     const blockNumberDecimal = parseInt(String(event.blockNumber), 16);                    
                     blockNumber = blockNumberDecimal;
+                    console.error(`[Error] Not possible process event Address: ${event.address}. Blocknumber: '${blockNumberDecimal}'`); 
 
-                    console.error(`Error processing event. Address: ${event.address}. Blocknumber: '${blockNumberDecimal}'`);                    
+                    if (blockEventListener) {
+                        console.log(`[${botIndex}] Existing BlockEvent listener found. Removing...`);
+                        blockEventListener.off();
+                        blockEventListener = null;
+                    }
+
+                    await TrackEvents(botIndex, discordClient, telegramClient, twitterClient, rpcClient);
                 }
             },
             {
@@ -91,9 +99,8 @@ export async function TrackEvents(
             },
         );
     } catch (e) {
-        console.log(`An error occurred. Restarting application...`);
+        console.log(`[Error] An error occurred. Restarting application...`);
         setTimeout(() => TrackEvents(botIndex, discordClient, telegramClient, twitterClient, rpcClient), 10000);
     }
 }
-
 

@@ -21,7 +21,7 @@ export const GetTokensData = async () => {
     }
 
     const symbols = GetSymbols()
-    console.log(`Symbols: (${symbols.length}) ${symbols.join(', ')}`)
+    console.log(`[Info] Symbols: (${symbols.length}) ${symbols.join(', ')}`)
     return global.TOKENS;
 }
 

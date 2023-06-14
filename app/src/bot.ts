@@ -20,6 +20,8 @@ export class Bot{
     telegramClient: Telegraf<Context<Update>> = TelegramClient
     rpcClient = new RpcClient(alchemyProvider)
     alarm: NodeJS.Timeout | undefined
+
+
     async init(dev: boolean) {
         botIndex++;
         console.log(`[${botIndex}] bot init...`)
@@ -37,12 +39,24 @@ export class Bot{
     
             this.reload()
 
+        if (this.alarm) {
+            console.log(`[${botIndex}] Clearing existing alarm...`);
+            clearInterval(this.alarm);
+            this.alarm = undefined;
+        }
+
         this.alarm = setInterval(async () => {
             console.log(`[${botIndex}] Updating data...`)
             this.reload()
         }, 20 * 60 * 1000);
 
-        await TrackEvents(botIndex, this.discordClient, this.telegramClient, this.twitterClient, this.rpcClient)
+        await TrackEvents(
+            botIndex,
+            this.discordClient,
+            this.telegramClient,
+            this.twitterClient,
+            this.rpcClient,
+          );
 
     }
 
@@ -52,10 +66,7 @@ export class Bot{
         await this.retryAsync(GetPrices, 5, 3000);
         await this.retryAsync(GetVeloData, 5, 3000);
     }
-
-
-    
-    
+        
     async SetUpDiscord() {
         if (DISCORD_ENABLED) {
             this.discordClient = DiscordClient
@@ -85,11 +96,11 @@ export class Bot{
             try {
                 return await fn();
             } catch (error) {
-                console.error(`Error occurred. Attempt ${i + 1} of ${maxRetries}. Retrying in ${retryDelay / 1000} seconds...`);
+                console.error('[Error] Attempt ${i + 1} of ${maxRetries}. Retrying in ${retryDelay / 1000} seconds...');
                 await new Promise(resolve => setTimeout(resolve, retryDelay));
             }
         }
-        throw new Error(`Failed after ${maxRetries} retries.`);
+        throw new Error('[Error] Failed after ${maxRetries} retries.');
     }
     
 }

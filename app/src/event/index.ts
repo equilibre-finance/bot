@@ -23,7 +23,7 @@ export class BlockEvent {
     let timeout: NodeJS.Timeout | null
 
     rpcClient.provider.getBlock(startBlockTag).then(async (block) => {
-      console.debug(`Polling from block ${block.number} every ${ms}ms`)
+      console.debug(`[Info] Polling from block ${block.number} every ${ms}ms`)
       let prevBlock = block
 
       const poll = async () => {
@@ -31,7 +31,7 @@ export class BlockEvent {
         try {
             latestBlock = await rpcClient.provider.getBlock('latest')
         }catch(e){
-            console.warn('Failed to get latest block', e)
+            console.warn('[Info] Failed to get latest block', e)
             setTimeout(poll, ms)
             return
         }
@@ -42,7 +42,7 @@ export class BlockEvent {
           return
         }
         console.debug(
-          `Querying block range: ${fromBlockNumber} to ${toBlockNumber} (${toBlockNumber - fromBlockNumber} blocks)`,
+          `[Info] Querying block range: ${fromBlockNumber} to ${toBlockNumber} (${toBlockNumber - fromBlockNumber} blocks)`,
         )
 
         try {
@@ -56,7 +56,7 @@ export class BlockEvent {
           ])
 
           if (events.length > 0) {
-            console.debug(`Found ${events.length} events`)
+            console.debug(`[Info] Found ${events.length} events`)
           }
 
           await Promise.all(
@@ -65,7 +65,7 @@ export class BlockEvent {
             }),
           )
         } catch (e) {
-          console.warn('Failed to get eth_logs', e)
+          console.warn('[Info] Failed to get eth_logs', e)
         }
 
         prevBlock = latestBlock
