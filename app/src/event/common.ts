@@ -105,9 +105,9 @@ export async function BroadCast<T extends BaseEvent>(
         printObject(embed)
       }
 
-      console.log('[discord channel]', channel)
+      // console.log('[discord channel]', channel)
       // get the data inside embed
-      console.log('[discord]', embed[0].toJSON())
+      console.log('[discord]', channel, embed[0].toJSON())
 
       await PostDiscord(embed, discordClient, channel, att)
     }

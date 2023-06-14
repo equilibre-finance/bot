@@ -76,12 +76,11 @@ export async function TrackEvents(
                         await TrackBribe(discordClient, telegramClient, twitterClient, rpcClient, event);
                     }
                 } catch (innerError) {
-                    console.error(`Error processing event. Address: ${event.address}. Topic: '${event.topics[0].toLowerCase()}'\n`);
 
-                    // Restart the event processing with the blockNumber equal to the event that was lost
-                    blockNumber = event.blockNumber;
+                    const blockNumberDecimal = parseInt(String(event.blockNumber), 16);                    
+                    blockNumber = blockNumberDecimal;
 
-                    console.log(`Event lost. Restarting event processing from block ${blockNumber}`);
+                    console.error(`Error processing event. Address: ${event.address}. Blocknumber: '${blockNumberDecimal}'`);                    
                 }
             },
             {
@@ -92,7 +91,6 @@ export async function TrackEvents(
             },
         );
     } catch (e) {
-        console.error(`[${botIndex}] TrackEvents`, e);
         console.log(`An error occurred. Restarting application...`);
         setTimeout(() => TrackEvents(botIndex, discordClient, telegramClient, twitterClient, rpcClient), 10000);
     }
