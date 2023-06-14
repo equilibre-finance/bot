@@ -24,52 +24,80 @@ export class Bot {
     rpcClient = new RpcClient(alchemyProvider)
     alarm: NodeJS.Timeout | undefined
     isTimerRunning: boolean = false;
+    queue: Promise<void> = Promise.resolve();
 
     async init(dev: boolean) {
         botIndex++;
-        console.log(`[Bot ${botIndex}] bot init...`)
-        await this.SetUpDiscord()
-        await this.SetUpTwitter()
-        await this.SetUpTelegram()
-
-        global.ENS = {}
-        if (!global.TOKEN_PRICES)
-            global.TOKEN_PRICES = {}
-        global.TOKEN_IMAGES = {}
-        global.VELO_DATA = []
-        global.PAIR_ADDRESSES = []
-        global.BRIBE_ADDRESSES = []
+        console.log(`[Info] bot init...`);
+        await this.SetUpDiscord();
+        await this.SetUpTwitter();
+        await this.SetUpTelegram();
     
-        this.reload()
-
-
+        global.ENS = {};
+        if (!global.TOKEN_PRICES)
+            global.TOKEN_PRICES = {};
+        global.TOKEN_IMAGES = {};
+        global.VELO_DATA = [];
+        global.PAIR_ADDRESSES = [];
+        global.BRIBE_ADDRESSES = [];
+    
+        await this.reload();
+    
         if (this.alarm) {
             clearInterval(this.alarm);
             this.alarm = undefined;
         }
-        
-        
+    
+        // Call TrackEvents once before the interval
         if (!this.isTimerRunning) {
-            this.alarm = setInterval(async () => {
-                this.isTimerRunning = true;
-                console.log(`[Bot ${botIndex}] Updating data...`)
-                this.reload()
+            this.isTimerRunning = true;
+    
+            try {
+                await TrackEvents(
+                    botIndex,
+                    this.discordClient,
+                    this.telegramClient,
+                    this.twitterClient,
+                    this.rpcClient,
+                );
+                console.log(`[Info] Finished tracking events.`);
+            } catch (error) {
+                console.error(`[Info] An error occurred while tracking events: ${error}`);
+            } finally {
                 this.isTimerRunning = false;
+            }
+    
+            this.alarm = setInterval(async () => {
+                if (!this.isTimerRunning) {
+                    this.isTimerRunning = true;
+                    console.log(`[Info] Updating data...`);
+                    this.reload();
+    
+                    try {
+                        await TrackEvents(
+                            botIndex,
+                            this.discordClient,
+                            this.telegramClient,
+                            this.twitterClient,
+                            this.rpcClient,
+                        );
+                        console.log(`[Info] Finished tracking events.`);
+                    } catch (error) {
+                        console.error(`[Info] An error occurred while tracking events: ${error}`);
+                    } finally {
+                        this.isTimerRunning = false;
+                    }
+                }
             }, 20 * 60 * 1000);
+        } else {
+            console.log(`[Info] Timer is already running. Skipping...`);
         }
-
-        await TrackEvents(
-            botIndex,
-            this.discordClient,
-            this.telegramClient,
-            this.twitterClient,
-            this.rpcClient,
-        );
-
     }
+    
+    
 
     async reload() {
-        console.log(`[Bot ${botIndex}]  Reloading data...`)
+        console.log(`[Info] Reloading data...`)
         await GetTokensData();
         await GetPrices();
         await GetVeloData();
@@ -79,7 +107,7 @@ export class Bot {
         if (DISCORD_ENABLED) {
             this.discordClient = DiscordClient
             this.discordClient.on('ready', async (client: any) => {
-                console.debug(`[${botIndex}] Discord ${client.user?.tag}!`)
+                console.debug(`[Info] Discord ${client.user?.tag}!`)
             })
             await this.discordClient.login(DISCORD_ACCESS_TOKEN)
             await defaultActivity(this.discordClient)

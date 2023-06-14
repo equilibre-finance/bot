@@ -9,9 +9,9 @@ let maxRetries = 3;
 const telegram = new Telegraf(LOG_TOKEN)
 
 async function initBot() {
-    console.log('Initializing bot...');
+    console.log('[Info] Initializing bot...');
     if (bot) {
-        console.log('Cleaning up existing bot...');
+        console.log('[Info] Cleaning up existing bot...');
         if(bot.alarm) {
             clearInterval(bot.alarm);
             bot.alarm = undefined;

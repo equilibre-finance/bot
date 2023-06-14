@@ -17,7 +17,7 @@ export type EventListenerOptions = {
 }
 export class BlockEvent {
   static on(rpcClient: RpcClient, callback: EventListenerCallback, options?: EventListenerOptions): EventListener {
-    const ms = options?.pollInterval ?? 30 * 1000
+    const ms = options?.pollInterval ?? 90 * 1000
     const startBlockTag = options?.startBlockNumber ?? 'latest'
 
     let timeout: NodeJS.Timeout | null
