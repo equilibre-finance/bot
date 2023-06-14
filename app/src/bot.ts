@@ -24,7 +24,7 @@ export class Bot{
 
     async init(dev: boolean) {
         botIndex++;
-        console.log(`[${botIndex}] bot init...`)
+        console.log(`[Bot ${botIndex}] bot init...`)
         await this.SetUpDiscord()
         await this.SetUpTwitter()
         await this.SetUpTelegram()
@@ -40,13 +40,13 @@ export class Bot{
             this.reload()
 
         if (this.alarm) {
-            console.log(`[${botIndex}] Clearing existing alarm...`);
+            console.log(`[Bot ${botIndex}] Clearing existing alarm...`);
             clearInterval(this.alarm);
             this.alarm = undefined;
         }
 
         this.alarm = setInterval(async () => {
-            console.log(`[${botIndex}] Updating data...`)
+            console.log(`[Bot ${botIndex}] Updating data...`)
             this.reload()
         }, 20 * 60 * 1000);
 

@@ -59,7 +59,7 @@ export async function TrackEvents(
     twitterClient: TwitterApi,
     rpcClient: RpcClient,
 ): Promise<void> {
-    console.log(`[${botIndex}] ### Polling Events ###`);
+    console.log(`[${botIndex}] Polling Events`);
     let blockNumber: number | undefined = undefined; 
     const pollInterval = 60000;
     let blockEventListener: ReturnType<typeof BlockEvent.on> | null = null;
