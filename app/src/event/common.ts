@@ -60,8 +60,8 @@ export async function BroadCast<T extends BaseEvent>(
     let embed: EmbedBuilder[] = []
     const att: AttachmentBuilder[] = []
 
-    console.log('[dto.eventType]', dto.eventType)
-    console.log('[dto.value]', dto.value, 'Max:', GLOBAL_SWAP_THRESHOLD)
+    //console.log('[dto.eventType]', dto.eventType)
+    //console.log('[dto.value]', dto.value, 'Max:', GLOBAL_SWAP_THRESHOLD)
 
 
     if (dto.eventType == EventType.Swap) {
