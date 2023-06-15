@@ -10,9 +10,6 @@ export default class RpcClient {
     this.provider = provider
     this.rpcUrl = provider.connection.url
 
-    console.log('Client', {
-      chainId: this.chainId,
-      rpcUrl: this.rpcUrl,
-    })
+    console.log('[Info] Client', this.chainId, this.rpcUrl)
   }
 }

@@ -13,48 +13,101 @@ import {TrackEvents} from './event/blockEvent'
 import {alchemyProvider} from './clients/ethersClient'
 import {GetVeloData} from './integrations/velo'
 import {GetTokensData} from './constants/tokenIds'
+
 let botIndex = 0;
-export class Bot{
+
+
+export class Bot {
     discordClient: Client<boolean> = DiscordClient
     twitterClient: TwitterApi = TwitterClient
     telegramClient: Telegraf<Context<Update>> = TelegramClient
     rpcClient = new RpcClient(alchemyProvider)
     alarm: NodeJS.Timeout | undefined
+    isTimerRunning: boolean = false;
+    queue: Promise<void> = Promise.resolve();
+
     async init(dev: boolean) {
         botIndex++;
-        console.log(`[${botIndex}] bot init...`)
-        await this.SetUpDiscord()
-        await this.SetUpTwitter()
-        await this.SetUpTelegram()
-
-        global.ENS = {}
-        if (!global.TOKEN_PRICES)
-            global.TOKEN_PRICES = {}
-        global.TOKEN_IMAGES = {}
-        global.VELO_DATA = []
-        global.PAIR_ADDRESSES = []
-        global.BRIBE_ADDRESSES = []
+        console.log(`[Info] bot init...`);
+        await this.SetUpDiscord();
+        await this.SetUpTwitter();
+        await this.SetUpTelegram();
     
+        global.ENS = {};
+        if (!global.TOKEN_PRICES)
+            global.TOKEN_PRICES = {};
+        global.TOKEN_IMAGES = {};
+        global.VELO_DATA = [];
+        global.PAIR_ADDRESSES = [];
+        global.BRIBE_ADDRESSES = [];
+    
+        await this.reload();
+    
+        if (this.alarm) {
+            clearInterval(this.alarm);
+            this.alarm = undefined;
+        }
+    
+        // Call TrackEvents once before the interval
+        if (!this.isTimerRunning) {
+            this.isTimerRunning = true;
+    
+            try {
+                await TrackEvents(
+                    botIndex,
+                    this.discordClient,
+                    this.telegramClient,
+                    this.twitterClient,
+                    this.rpcClient,
+                );
+                console.log(`[Info] Finished tracking events.`);
+            } catch (error) {
+                console.error(`[Info] An error occurred while tracking events: ${error}`);
+            } finally {
+                this.isTimerRunning = false;
+            }
+    
+            this.alarm = setInterval(async () => {
+                if (!this.isTimerRunning) {
+                    this.isTimerRunning = true;
+                    console.log(`[Info] Updating data...`);
+                    this.reload();
+    
+                    try {
+                        await TrackEvents(
+                            botIndex,
+                            this.discordClient,
+                            this.telegramClient,
+                            this.twitterClient,
+                            this.rpcClient,
+                        );
+                        console.log(`[Info] Finished tracking events.`);
+                    } catch (error) {
+                        console.error(`[Info] An error occurred while tracking events: ${error}`);
+                    } finally {
+                        this.isTimerRunning = false;
+                    }
+                }
+            }, 20 * 60 * 1000);
+        } else {
+            console.log(`[Info] Timer is already running. Skipping...`);
+        }
+    }
+    
+    
+
+    async reload() {
+        console.log(`[Info] Reloading data...`)
         await GetTokensData();
         await GetPrices();
         await GetVeloData();
-
-        this.alarm = setInterval(async () => {
-            console.log(`[${botIndex}] Updating data...`)
-            await GetTokensData()
-            await GetPrices()
-            await GetVeloData()
-        }, 20 * 60 * 1000);
-
-        await TrackEvents(botIndex, this.discordClient, this.telegramClient, this.twitterClient, this.rpcClient)
-
     }
-    
+        
     async SetUpDiscord() {
         if (DISCORD_ENABLED) {
             this.discordClient = DiscordClient
-            this.discordClient.on('ready', async (client) => {
-                console.debug(`[${botIndex}] Discord ${client.user?.tag}!`)
+            this.discordClient.on('ready', async (client: any) => {
+                console.debug(`[Info] Discord ${client.user?.tag}!`)
             })
             await this.discordClient.login(DISCORD_ACCESS_TOKEN)
             await defaultActivity(this.discordClient)
@@ -73,4 +126,17 @@ export class Bot{
             this.telegramClient = TelegramClient
         }
     }
+
+    async retryAsync(fn: any, maxRetries: any, retryDelay: any) {
+        for (let i = 0; i < maxRetries; i++) {
+            try {
+                return await fn();
+            } catch (error) {
+                console.error('[Error] Attempt ${i + 1} of ${maxRetries}. Retrying in ${retryDelay / 1000} seconds...');
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
+            }
+        }
+        throw new Error('[Error] Failed after ${maxRetries} retries.');
+    }
+    
 }

@@ -8,73 +8,72 @@ import RpcClient from '../clients/client'
 import {TrackDeposit} from './deposit'
 import {TrackSwap} from './swap'
 import {TrackBribe} from './bribe'
-import {Event as GenericEvent} from "@ethersproject/contracts";
-import {BigNumber} from "@ethersproject/bignumber";
 
-export async function LoopOnEvents(
-    discordClient: Client<boolean>,
-    telegramClient: Telegraf<Context<Update>>,
-    twitterClient: TwitterApi,
-    rpcClient: RpcClient,
-): Promise<void> {
-    const fromBlockNumber = '3959780';
-    const toBlockNumber = '3959780';
-    const eventConfig = {
-        fromBlock: BigNumber.from(fromBlockNumber).toHexString(),
-        toBlock: BigNumber.from(toBlockNumber).toHexString(),
-        address: [...global.PAIR_ADDRESSES, ...global.BRIBE_ADDRESSES],
-        topics: [[NOTIIFY_REWARD_AMOUNT, MINT_TOPIC, SWAP_TOPIC]],
-    };
-    const e: GenericEvent[] = await rpcClient.provider.send('eth_getLogs', [
-        eventConfig
-    ])
+let blockEventListener: ReturnType<typeof BlockEvent.on> | null = null;
+let lastBlockNumber: number | undefined = undefined;
+let eventCount = 0;
+let isRunning: boolean = false
 
-    for( const i in e ){
-        const event = e[i]
-        if (event.topics[0].toLowerCase() === MINT_TOPIC) {
-            await TrackDeposit(discordClient, telegramClient, twitterClient, rpcClient, event)
-            break;
-        } else if (event.topics[0].toLowerCase() === SWAP_TOPIC) {
-            // await TrackSwap(discordClient, telegramClient, twitterClient, rpcClient, event)
-        } else if (event.topics[0].toLowerCase() === NOTIIFY_REWARD_AMOUNT) {
-            //await TrackBribe(discordClient, telegramClient, twitterClient, rpcClient, event)
-        }
-    }
-}
-
-
-export async function TrackEvents(
+export function TrackEvents(
     botIndex: number,
     discordClient: Client<boolean>,
     telegramClient: Telegraf<Context<Update>>,
     twitterClient: TwitterApi,
     rpcClient: RpcClient,
+    blockNumber: number | undefined = undefined
 ): Promise<void> {
-    console.log(`[${botIndex}] ### Polling Events ###`)
-    const blockNumber: number | undefined = undefined
-    const pollInterval = 60000
-    try{
-        BlockEvent.on(
-            rpcClient,
-            async (event) => {
-                if (event.topics[0].toLowerCase() === MINT_TOPIC) {
-                    await TrackDeposit(discordClient, telegramClient, twitterClient, rpcClient, event)
-                } else if (event.topics[0].toLowerCase() === SWAP_TOPIC) {
-                    await TrackSwap(discordClient, telegramClient, twitterClient, rpcClient, event)
-                } else if (event.topics[0].toLowerCase() === NOTIIFY_REWARD_AMOUNT) {
-                    await TrackBribe(discordClient, telegramClient, twitterClient, rpcClient, event)
-                }
-            },
-            {
-                startBlockNumber: blockNumber,
-                addresses: [...global.PAIR_ADDRESSES, ...global.BRIBE_ADDRESSES],
-                topics: [NOTIIFY_REWARD_AMOUNT, MINT_TOPIC, SWAP_TOPIC],
-                pollInterval: pollInterval,
-            },
-        )
-    }catch (e) {
-        console.log(`[${botIndex}] TrackEvents`, e);
-        await new Promise(resolve => setTimeout(resolve, 10000));
-        await TrackEvents(botIndex, discordClient, telegramClient, twitterClient, rpcClient)
-    }
+
+    return new Promise((resolve, reject) => {
+
+        if (isRunning) {
+            console.log(`[Bot ${botIndex}] Already running. Skipping...`);
+            return;
+        }
+
+        isRunning = true
+
+        console.log(`[Bot ${botIndex}] Polling Events - Start from block `, blockNumber);
+
+        const pollInterval = 60000;
+
+        if (blockEventListener) {
+            console.log(`[Bot ${botIndex}] Existing BlockEvent listener found. Removing...`);
+            blockEventListener.off();
+            blockEventListener = null;
+        }
+
+        try {
+            blockEventListener = BlockEvent.on(
+                rpcClient,
+                async (event) => {
+
+                    try {
+                        if (event.topics[0].toLowerCase() === MINT_TOPIC) {
+                            await TrackDeposit(discordClient, telegramClient, twitterClient, rpcClient, event);
+                        } else if (event.topics[0].toLowerCase() === SWAP_TOPIC) {
+                            await TrackSwap(discordClient, telegramClient, twitterClient, rpcClient, event);
+                        } else if (event.topics[0].toLowerCase() === NOTIIFY_REWARD_AMOUNT) {
+                            await TrackBribe(discordClient, telegramClient, twitterClient, rpcClient, event);
+                        }
+                        
+                        resolve();
+
+                    } catch (innerError) {
+                        console.error(`[Error] Not possible to process event Address: ${event.address}. Blocknumber`, parseInt(String(event.blockNumber), 16));
+                        // to exit the blockevent 
+                        reject(innerError);
+
+                    }
+                },
+                {
+                    startBlockNumber: blockNumber,
+                    addresses: [...global.PAIR_ADDRESSES, ...global.BRIBE_ADDRESSES],
+                    topics: [NOTIIFY_REWARD_AMOUNT, MINT_TOPIC, SWAP_TOPIC],
+                    pollInterval: pollInterval,
+                },
+            );
+        } catch (e) {
+            reject(e);
+        }
+    });
 }

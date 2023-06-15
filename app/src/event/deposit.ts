@@ -1,4 +1,4 @@
-import {DISCORD_DEPOSIT_THRESHOLD, TELEGRAM_CHANNEL} from '../secrets'
+import {DISCORD_DEPOSIT_THRESHOLD, TELEGRAM_CHANNEL, TELEGRAM_ENABLED} from '../secrets'
 import fromBigNumber from '../utils/fromBigNumber'
 import {Client} from 'discord.js'
 import {DepositDto} from '../types/dtos'
@@ -16,7 +16,6 @@ import {EventType} from '../constants/eventType'
 import {BroadCast} from './common'
 import {Pair} from '../types/velo'
 import {PriceToken} from './pricing'
-import {PostTelegram} from "../integrations/telegram";
 import {GetTokens} from "../constants/tokenIds";
 
 export async function TrackDeposit(
@@ -39,9 +38,12 @@ export async function TrackDeposit(
         })
 
         if (pairs.length == 0) {
-            const post = '[deposit] PAIR not found in API';
+            const post = '[deposit] PAIR not found in API. Address: '.concat(event.address.toLowerCase());
             console.log(post)
-            await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
+
+            if(TELEGRAM_ENABLED)
+                await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
+
             return
         }
 
@@ -57,7 +59,10 @@ export async function TrackDeposit(
             if( token1 === undefined )
                 post += `[deposit] Token 1 not found: ${pair?.token1_address}\n`
             console.log(post)
-            await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
+
+            if(TELEGRAM_ENABLED)
+                await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
+
             return
         }
 
@@ -72,14 +77,16 @@ export async function TrackDeposit(
 
         if ( isNaN(totalValue) )
             console.log('[deposits] totalValue is NaN: Token: ' + pair?.token1_address)
-        else if (totalValue >= DISCORD_DEPOSIT_THRESHOLD) {
+        else if (totalValue >= Number(DISCORD_DEPOSIT_THRESHOLD)) {
             console.log(`*Deposit found: $${totalValue}>=${DISCORD_DEPOSIT_THRESHOLD} ${pair?.token0_address}/${pair?.token1_address}`)
             try {
                 timestamp = (await rpcClient.provider.getBlock(event.blockNumber)).timestamp
             } catch (ex:any) {
                 const post = `Error getting block number ${event.blockNumber}: \n${ex.toString()}`;
                 console.log(post)
-                await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
+
+                if(TELEGRAM_ENABLED)
+                    await telegramClient.telegram.sendMessage(TELEGRAM_CHANNEL, post)
             }
 
             const from = GetNotableAddress(event.args.sender)
