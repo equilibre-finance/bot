@@ -15,7 +15,7 @@ import {GetVeloData} from './integrations/velo'
 import {GetTokensData} from './constants/tokenIds'
 
 let botIndex = 0;
-
+let startBlockNumber: number | undefined
 
 export class Bot {
     discordClient: Client<boolean> = DiscordClient
@@ -27,6 +27,7 @@ export class Bot {
     queue: Promise<void> = Promise.resolve();
 
     async init(dev: boolean) {
+        startBlockNumber = Number(process.env.LAST_BLOCK)
         botIndex++;
         console.log(`[Info] bot init...`);
         await this.SetUpDiscord();
@@ -59,6 +60,7 @@ export class Bot {
                     this.telegramClient,
                     this.twitterClient,
                     this.rpcClient,
+                    startBlockNumber
                 );
                 console.log(`[Info] Finished tracking events.`);
             } catch (error) {
@@ -80,6 +82,7 @@ export class Bot {
                             this.telegramClient,
                             this.twitterClient,
                             this.rpcClient,
+                            startBlockNumber
                         );
                         console.log(`[Info] Finished tracking events.`);
                     } catch (error) {
