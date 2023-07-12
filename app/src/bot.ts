@@ -60,7 +60,7 @@ export class Bot {
                     this.telegramClient,
                     this.twitterClient,
                     this.rpcClient,
-                    startBlockNumber
+                    
                 );
                 console.log(`[Info] Finished tracking events.`);
             } catch (error) {
@@ -82,7 +82,7 @@ export class Bot {
                             this.telegramClient,
                             this.twitterClient,
                             this.rpcClient,
-                            startBlockNumber
+                            
                         );
                         console.log(`[Info] Finished tracking events.`);
                     } catch (error) {
